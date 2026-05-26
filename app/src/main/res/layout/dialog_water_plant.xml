@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@android:color/white">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center_horizontal"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp">
+            <ImageView
+                android:id="@+id/imgPlant"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_flower" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvPlantName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Plant Name"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#2E7D32"
+            android:gravity="center"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/tvWateringInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weekly Plan"
+            android:textSize="16sp"
+            android:textColor="#1976D2"
+            android:gravity="center"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Watering Schedule Graphic"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#666666"
+            android:layout_marginTop="28dp" />
+
+        <!-- Watering Graphic -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:background="#F5F5F5"
+            android:padding="16dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal">
+                <View android:id="@+id/bar0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+                <View android:id="@+id/bar1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+                <View android:id="@+id/bar2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+                <View android:id="@+id/bar3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+                <View android:id="@+id/bar4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+                <View android:id="@+id/bar5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+                <View android:id="@+id/bar6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:layout_margin="2dp" android:background="#E0E0E0"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="M" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="T" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="W" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="T" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="F" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="S" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="S" android:gravity="center" android:textSize="11sp" android:textColor="#999999"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnWater"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="28dp"
+            android:text="💧 Mark as Watered"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:backgroundTint="#2196F3"
+            android:textColor="@android:color/white"
+            app:cornerRadius="12dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="40dp"
+            android:padding="20dp"
+            android:background="#F9FBE7">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Wanna check your plant?"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/btnCheckHealth"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="14dp"
+                android:text="🩺 Start Doctor Mode"
+                android:textAllCaps="false"
+                android:textColor="#D32F2F"
+                app:strokeColor="#D32F2F"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050637254587",
+    "project_id": "wolzaarduinoproject",
+    "storage_bucket": "wolzaarduinoproject.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050637254587:android:7c5295f20746c024250e9e",
+        "android_client_info": {
+          "package_name": "com.wolza.arduinoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCqgF-StWQuKFMpwTjAVDAAU7qVxZWDZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

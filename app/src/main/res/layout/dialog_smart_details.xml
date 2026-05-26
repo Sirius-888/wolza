@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/tvPlantName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Plant Name"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tvScientific"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scientific Name"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:textColor="#757575"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Plant Photo Graphic -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            android:layout_marginBottom="16dp">
+            
+            <ImageView
+                android:id="@+id/ivPlant"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_flower"
+                android:background="#F5F5F5" />
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tvHealth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌿 Condition: Healthy"
+            android:textSize="15sp"
+            android:textColor="#4CAF50"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tvWateringSchedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💧 Schedule: Every 3 days"
+            android:textSize="15sp"
+            android:textColor="#333333"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tvLight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="☀️ Light: Direct sunlight"
+            android:textSize="15sp"
+            android:textColor="#333333"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tvTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌡️ Temperature: 18-28°C"
+            android:textSize="15sp"
+            android:textColor="#333333"
+            android:layout_marginVertical="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginVertical="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📋 AI Care Hints"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvRecommendation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hints will appear here..."
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/tvNextWatering"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📅 Next Watering: May 20"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FF9800"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tvWateredCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌱 Total times watered: 0"
+            android:textSize="13sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="24dp" />
+
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Close"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:backgroundTint="#4CAF50" />
+
+    </LinearLayout>
+
+</ScrollView>

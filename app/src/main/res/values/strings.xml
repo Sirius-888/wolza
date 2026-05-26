@@ -1,0 +1,80 @@
+<resources>
+    <string name="app_name">Wolza</string>
+
+    <!-- Login strings -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login_subtitle">Login to your account</string>
+    <string name="email_hint">Email Address</string>
+    <string name="password_hint">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login_button">Login</string>
+    <string name="signup_redirect">Don\'t have an account? Sign Up</string>
+
+    <!-- Sign Up strings -->
+    <string name="create_account">Create Account</string>
+    <string name="signup_subtitle">Sign up to get started</string>
+    <string name="name_hint">Full Name</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="password_requirements">Password must be at least 6 characters and contain at least 1 letter and 1 number</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="login_redirect">Already have an account? Log In</string>
+
+    <!-- Main Activity strings -->
+    <string name="welcome_message">Welcome, %1$s!</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="favorites">Favorites</string>
+    <string name="settings">Settings</string>
+    <string name="share_app">Share App</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="about">About</string>
+    <string name="logout">Logout</string>
+
+    <!-- Error messages -->
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_email">Please enter a valid email</string>
+    <string name="error_name_length">Name must be at least 3 characters</string>
+    <string name="error_password_length">Password must be at least 6 characters</string>
+    <string name="error_password_requirements">Password must contain at least 1 letter and 1 number</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+
+    <!-- Toast messages -->
+    <string name="login_success">Login Successful!</string>
+    <string name="login_failed">Invalid email or password</string>
+    <string name="signup_success">Account created successfully!</string>
+    <string name="signup_failed">Sign up failed. Please try again.</string>
+    <string name="logout_success">Logged out successfully</string>
+    <string name="account_created_login">Account created! Please login with your credentials.</string>
+
+    <!-- ===== ADD THESE TWO LINES ===== -->
+    <!-- Navigation drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!-- =============================== -->
+
+    <!-- About dialog -->
+    <string name="about_title">About</string>
+    <string name="about_message">App Name: ComWolza Arduino\nVersion: 1.0\nDeveloped by: Your Name</string>
+    <string name="ok">OK</string>
+
+    <!-- Arduino specific (optional) -->
+    <string name="connect_device">Connect to Arduino</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="scan_devices">Scan for Devices</string>
+    <string name="no_devices">No devices found</string>
+    <string name="search_flowers">Search Flowers</string>
+    <string name="search_hint">Search by flower name...</string>
+    <string name="flowers_found">%d flowers found</string>
+    <string name="no_flowers_found">No flowers found</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+
+
+    <string name="bluetooth_connecting">Connecting to Arduino...</string>
+    <string name="bluetooth_connected">Connected to HC-06</string>
+    <string name="moisture_dry">⚠️ SOIL IS DRY - Water needed!</string>
+    <string name="moisture_moderate">🌱 Moisture level: Moderate</string>
+    <string name="moisture_good">🌿 Soil is moist - Good!</string>
+    <string name="arduino_not_found">HC-06 not found. Check Arduino power.</string>
+    <string name="default_web_client_id">1050637254587-k2fdlc153ed5k3hmirj2hrduvdcd1rti.apps.googleusercontent.com</string>
+</resources>

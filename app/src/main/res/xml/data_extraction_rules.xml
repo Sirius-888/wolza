@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Back up shared preferences -->
+        <include domain="sharedpref" path="."/>
+
+        <!-- Back up database -->
+        <include domain="database" path="."/>
+
+        <!-- Don't back up cache -->
+        <exclude domain="file" path="cache"/>
+    </cloud-backup>
+
+    <device-transfer>
+        <!-- Transfer shared preferences -->
+        <include domain="sharedpref" path="."/>
+
+        <!-- Transfer database -->
+        <include domain="database" path="."/>
+
+        <!-- Don't transfer cache -->
+        <exclude domain="file" path="cache"/>
+    </device-transfer>
+</data-extraction-rules>

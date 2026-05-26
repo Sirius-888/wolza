@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chatItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- Avatar (Left) -->
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_profile"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="bottom" />
+
+    <!-- Message Bubble Container -->
+    <LinearLayout
+        android:id="@+id/messageBubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:maxWidth="280dp"
+        android:minWidth="60dp"
+        android:background="@drawable/chat_bubble_other">
+
+        <!-- Username -->
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textSize="11sp"
+            android:textColor="#4CAF50"
+            android:textStyle="bold" />
+
+        <!-- Message Text -->
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Message"
+            android:textSize="14sp"
+            android:textColor="#333333"
+            android:layout_marginTop="2dp" />
+
+        <!-- Chat Image -->
+        <ImageView
+            android:id="@+id/ivChatImage"
+            android:layout_width="220dp"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="4dp"
+            android:background="#E0E0E0"
+            android:visibility="gone" />
+
+        <!-- Time -->
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00"
+            android:textSize="9sp"
+            android:textColor="#999999"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="end" />
+
+    </LinearLayout>
+
+</LinearLayout>

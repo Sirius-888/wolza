@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#FFFFFF">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginBottom="8dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+                <ImageView
+                    android:id="@+id/ivFlower"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_flower"
+                    android:background="#F5F5F5" />
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/ivDelete"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="6dp"
+                android:src="@drawable/ic_delete"
+                android:padding="6dp"
+                android:background="@drawable/delete_button_bg"
+                app:tint="@android:color/white" />
+
+            <ImageView
+                android:id="@+id/ivVerified"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="6dp"
+                android:src="@drawable/ic_verified"
+                android:padding="2dp"
+                android:background="@drawable/soil_circle_bg"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvPlantName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Plant Name"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tvGrowthStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sprout"
+            android:textSize="13sp"
+            android:textColor="#F57C00"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Weekly Plan Visual (7 dots) -->
+        <LinearLayout
+            android:id="@+id/layoutWeeklyPlan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="M" android:textSize="10sp" android:layout_marginEnd="2dp" android:id="@+id/day0"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T" android:textSize="10sp" android:layout_marginEnd="2dp" android:id="@+id/day1"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="W" android:textSize="10sp" android:layout_marginEnd="2dp" android:id="@+id/day2"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T" android:textSize="10sp" android:layout_marginEnd="2dp" android:id="@+id/day3"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="F" android:textSize="10sp" android:layout_marginEnd="2dp" android:id="@+id/day4"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S" android:textSize="10sp" android:layout_marginEnd="2dp" android:id="@+id/day5"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S" android:textSize="10sp" android:id="@+id/day6"/>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressGrowth"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:progress="0"
+            android:max="100"
+            android:progressTint="#4CAF50"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:id="@+id/ivWaterIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_water_drop"
+                app:tint="#2196F3" />
+            <TextView
+                android:id="@+id/tvWaterStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Need water"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#F44336"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
