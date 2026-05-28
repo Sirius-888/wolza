@@ -39,9 +39,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileActivity extends AppCompatActivity {
 
     private CircleImageView ivAvatar;
-    private TextView tvEmail, tvChangePassword;
-    private TextInputEditText etName, etSurname;
-    private TextInputLayout tilName, tilSurname;
+    private TextView tvEmail, tvChangePassword, tvPhone;
+    private TextInputEditText etName, etSurname, etPhone;
+    private TextInputLayout tilName, tilSurname, tilPhone;
     private Button btnSave, btnCancel;
     private ImageView  btnBack;
     private Button btnEdit;
@@ -72,11 +72,14 @@ public class ProfileActivity extends AppCompatActivity {
     private void initViews() {
         ivAvatar = findViewById(R.id.ivAvatar);
         tvEmail = findViewById(R.id.tvEmail);
+        tvPhone = findViewById(R.id.tvPhone);
         tvChangePassword = findViewById(R.id.tvChangePassword);
         etName = findViewById(R.id.etName);
         etSurname = findViewById(R.id.etSurname);
+        etPhone = findViewById(R.id.etPhone);
         tilName = findViewById(R.id.tilName);
         tilSurname = findViewById(R.id.tilSurname);
+        tilPhone = findViewById(R.id.tilPhone);
         btnSave = findViewById(R.id.btnSave);
         btnCancel = findViewById(R.id.btnCancel);
         btnEdit = findViewById(R.id.btnEdit);
@@ -85,7 +88,6 @@ public class ProfileActivity extends AppCompatActivity {
         editLayout = findViewById(R.id.editLayout);
         viewLayout = findViewById(R.id.viewLayout);
 
-        // Initially show view mode
         setEditMode(false);
     }
 
@@ -94,7 +96,6 @@ public class ProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("My Profile");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
     }
 
@@ -116,40 +117,33 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // Set email from Firebase Auth
-        tvEmail.setText(currentUser.getEmail());
-
         DocumentReference userRef = db.collection("users").document(currentUser.getUid());
         userRef.get().addOnCompleteListener(task -> {
             showLoading(false);
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
+                if (document != null && document.exists()) {
                     String name = document.getString("name");
                     String surname = document.getString("surname");
+                    String phone = document.getString("phone");
                     String avatarBase64 = document.getString("avatar");
 
-                    // Find the TextView in view mode
-                    TextView tvName = findViewById(R.id.tvName);
-                    TextView tvSurname = findViewById(R.id.tvSurname);
+                    TextView tvNameView = findViewById(R.id.tvName);
+                    TextView tvSurnameView = findViewById(R.id.tvSurname);
 
-                    if (tvName != null) {
-                        tvName.setText(name != null ? name : "--");
-                    }
-                    if (tvSurname != null) {
-                        tvSurname.setText(surname != null ? surname : "--");
-                    }
+                    if (tvNameView != null) tvNameView.setText(name != null ? name : "--");
+                    if (tvSurnameView != null) tvSurnameView.setText(surname != null ? surname : "--");
+                    if (tvPhone != null) tvPhone.setText(phone != null ? phone : "--");
 
-                    // Set edit text fields
                     if (etName != null) etName.setText(name != null ? name : "");
                     if (etSurname != null) etSurname.setText(surname != null ? surname : "");
+                    if (etPhone != null) etPhone.setText(phone != null ? phone : "");
 
                     if (avatarBase64 != null && !avatarBase64.isEmpty()) {
                         currentAvatarBase64 = avatarBase64;
                         setAvatarImage(avatarBase64);
                     }
                 } else {
-                    // Create new user document if doesn't exist
                     createUserDocument();
                 }
             }
@@ -162,63 +156,45 @@ public class ProfileActivity extends AppCompatActivity {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", "");
         userData.put("surname", "");
+        userData.put("phone", "");
         userData.put("email", currentUser.getEmail());
         userData.put("createdAt", System.currentTimeMillis());
         userData.put("avatar", "");
 
-        db.collection("users").document(currentUser.getUid())
-                .set(userData);
+        db.collection("users").document(currentUser.getUid()).set(userData);
     }
 
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
-
-        btnEdit.setOnClickListener(v -> {
-            setEditMode(true);
-        });
-
+        btnEdit.setOnClickListener(v -> setEditMode(true));
         btnCancel.setOnClickListener(v -> {
             setEditMode(false);
-            loadUserData(); // Reload original data
+            loadUserData();
         });
-
         btnSave.setOnClickListener(v -> saveProfile());
-
         ivAvatar.setOnClickListener(v -> showAvatarPickerDialog());
-
         tvChangePassword.setOnClickListener(v -> changePassword());
     }
 
     private void setEditMode(boolean edit) {
         isEditMode = edit;
-
-        if (edit) {
-            viewLayout.setVisibility(View.GONE);
-            editLayout.setVisibility(View.VISIBLE);
-            btnEdit.setVisibility(View.GONE);
-        } else {
-            viewLayout.setVisibility(View.VISIBLE);
-            editLayout.setVisibility(View.GONE);
-            btnEdit.setVisibility(View.VISIBLE);
-        }
+        viewLayout.setVisibility(edit ? View.GONE : View.VISIBLE);
+        editLayout.setVisibility(edit ? View.VISIBLE : View.GONE);
+        btnEdit.setVisibility(edit ? View.GONE : View.VISIBLE);
     }
 
     private void showAvatarPickerDialog() {
         String[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Change Avatar");
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
-                // Take Photo
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 }
             } else if (which == 1) {
-                // Choose from Gallery
-                Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(pickPhotoIntent, REQUEST_IMAGE_PICK);
             }
         });
@@ -228,41 +204,24 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK && data != null) {
             Bitmap bitmap = null;
-
             try {
                 if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                    // Camera photo
                     Bundle extras = data.getExtras();
                     bitmap = (Bitmap) extras.get("data");
                 } else if (requestCode == REQUEST_IMAGE_PICK) {
-                    // Gallery photo
                     Uri selectedImage = data.getData();
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 }
-
                 if (bitmap != null) {
-                    // Compress and convert to Base64
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-                    byte[] imageBytes = baos.toByteArray();
-                    currentAvatarBase64 = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-                    // Update avatar preview
+                    currentAvatarBase64 = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
                     ivAvatar.setImageBitmap(bitmap);
-
-                    // Auto-save if in edit mode
-                    if (isEditMode) {
-                        saveAvatarOnly();
-                    } else {
-                        // If not in edit mode, auto-save the avatar
-                        saveAvatarOnly();
-                    }
+                    saveAvatarOnly();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show();
             }
         }
@@ -270,26 +229,16 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void saveAvatarOnly() {
         if (currentUser == null) return;
-
         showLoading(true);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("avatar", currentAvatarBase64);
-
         db.collection("users").document(currentUser.getUid())
-                .update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    showLoading(false);
-                    Toast.makeText(this, "Avatar updated", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    showLoading(false);
-                    Toast.makeText(this, "Failed to update avatar", Toast.LENGTH_SHORT).show();
-                });
+                .update("avatar", currentAvatarBase64)
+                .addOnCompleteListener(task -> showLoading(false));
     }
 
     private void saveProfile() {
         String name = etName.getText().toString().trim();
         String surname = etSurname.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
 
         if (name.isEmpty()) {
             tilName.setError("Name is required");
@@ -297,15 +246,12 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         showLoading(true);
-
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", name);
         userData.put("surname", surname);
+        userData.put("phone", phone);
         userData.put("email", currentUser.getEmail());
-
-        if (!currentAvatarBase64.isEmpty()) {
-            userData.put("avatar", currentAvatarBase64);
-        }
+        if (!currentAvatarBase64.isEmpty()) userData.put("avatar", currentAvatarBase64);
 
         db.collection("users").document(currentUser.getUid())
                 .set(userData)
@@ -313,14 +259,7 @@ public class ProfileActivity extends AppCompatActivity {
                     showLoading(false);
                     Toast.makeText(ProfileActivity.this, "Profile updated!", Toast.LENGTH_SHORT).show();
                     setEditMode(false);
-
-                    // Update display name in Firebase Auth
-                    String fullName = name + " " + surname;
-                    currentUser.updateProfile(
-                            new com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                                    .setDisplayName(fullName)
-                                    .build()
-                    );
+                    loadUserData();
                 })
                 .addOnFailureListener(e -> {
                     showLoading(false);
@@ -341,34 +280,22 @@ public class ProfileActivity extends AppCompatActivity {
     private void changePassword() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Change Password");
-
         final EditText input = new EditText(this);
         input.setHint("Enter new password (min 6 characters)");
-        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT |
-                android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
         builder.setView(input);
-
         builder.setPositiveButton("Update", (dialog, which) -> {
             String newPassword = input.getText().toString().trim();
             if (newPassword.length() < 6) {
                 Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             showLoading(true);
-            currentUser.updatePassword(newPassword)
-                    .addOnCompleteListener(task -> {
-                        showLoading(false);
-                        if (task.isSuccessful()) {
-                            Toast.makeText(ProfileActivity.this,
-                                    "Password changed successfully!", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(ProfileActivity.this,
-                                    "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+            currentUser.updatePassword(newPassword).addOnCompleteListener(task -> {
+                showLoading(false);
+                if (task.isSuccessful()) Toast.makeText(ProfileActivity.this, "Password changed!", Toast.LENGTH_SHORT).show();
+            });
         });
-
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
@@ -377,6 +304,5 @@ public class ProfileActivity extends AppCompatActivity {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         btnSave.setEnabled(!show);
         btnCancel.setEnabled(!show);
-        btnEdit.setEnabled(!show);
     }
 }

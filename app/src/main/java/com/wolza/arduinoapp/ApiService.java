@@ -25,7 +25,7 @@ public class ApiService {
 
     private static final String TAG = "ApiService";
     private static final String BASE_URL = "https://api.plant.id/v3";
-    private static final String API_KEY = "m47Uv3pT7feZfTmLgO9sGl9eB8q81JshxDNtRoH10O3frCcvVB";
+    private static final String API_KEY = "th6r6DqZPSVK3j3oA3Ib39YzpLs0HwHf6bEgv4LJe6F3BzbllN";
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -34,9 +34,9 @@ public class ApiService {
 
     private ApiService() {
         client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .build();
     }
 
@@ -53,25 +53,23 @@ public class ApiService {
     }
 
     /**
-     * Identify plant AND check health using Plant.id v3 API
+     * Identify plant AND check health using Plant.id v3 API.
+     * This endpoint is more comprehensive than health_assessment alone.
      */
     public void identifyPlant(String base64Image, ApiCallback callback) {
         try {
-            String cleanBase64 = base64Image.replaceAll("\\s+", "");
-            if (cleanBase64.contains(",")) {
-                cleanBase64 = cleanBase64.substring(cleanBase64.indexOf(",") + 1);
-            }
+            String cleanBase64 = prepareBase64(base64Image);
 
             JSONObject jsonRequest = new JSONObject();
             JSONArray imagesArray = new JSONArray();
             imagesArray.put(cleanBase64);
 
             jsonRequest.put("images", imagesArray);
-            jsonRequest.put("health", "all"); // CRITICAL: Enables health/hints data
+            jsonRequest.put("health", "all");
             jsonRequest.put("similar_images", true);
 
             HttpUrl url = HttpUrl.parse(BASE_URL + "/identification").newBuilder()
-                    .addQueryParameter("details", "common_names,scientific_name,description,taxonomy,url,treatment")
+                    .addQueryParameter("details", "common_names,scientific_name,description,taxonomy,url,treatment,cause,classification")
                     .addQueryParameter("language", "en")
                     .build();
 
@@ -80,6 +78,43 @@ public class ApiService {
         } catch (JSONException e) {
             callback.onError("Request creation failed");
         }
+    }
+
+    /**
+     * Specifically check plant health using health_assessment endpoint.
+     */
+    public void checkHealth(String base64Image, ApiCallback callback) {
+        try {
+            String cleanBase64 = prepareBase64(base64Image);
+
+            JSONObject jsonRequest = new JSONObject();
+            JSONArray imagesArray = new JSONArray();
+            imagesArray.put(cleanBase64);
+
+            jsonRequest.put("images", imagesArray);
+            // Default location for context
+            jsonRequest.put("latitude", 40.1772);
+            jsonRequest.put("longitude", 44.5035);
+
+            HttpUrl url = HttpUrl.parse(BASE_URL + "/health_assessment").newBuilder()
+                    .addQueryParameter("details", "description,treatment,common_names,cause,classification")
+                    .addQueryParameter("language", "en")
+                    .build();
+
+            makePostRequest(url, jsonRequest, callback);
+
+        } catch (JSONException e) {
+            callback.onError("Request creation failed");
+        }
+    }
+
+    private String prepareBase64(String base64) {
+        if (base64 == null) return "";
+        String clean = base64.replaceAll("\\s+", "");
+        if (clean.contains(",")) {
+            clean = clean.substring(clean.indexOf(",") + 1);
+        }
+        return clean;
     }
 
     private void makePostRequest(HttpUrl url, JSONObject jsonRequest, ApiCallback callback) {
@@ -94,16 +129,20 @@ public class ApiService {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Network failure", e);
                 callback.onError("Network error. Please check connection.");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseBody = response.body().string();
+                Log.d(TAG, "API Response Code: " + response.code());
+                Log.d(TAG, "API Response Body: " + responseBody);
                 try {
                     if (response.isSuccessful()) {
                         callback.onSuccess(new JSONObject(responseBody));
                     } else {
+                        Log.e(TAG, "API Error: " + response.code() + " - " + responseBody);
                         callback.onError("API Error: " + response.code());
                     }
                 } catch (JSONException e) {

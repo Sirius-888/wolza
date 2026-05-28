@@ -222,7 +222,6 @@ public class MyGardenActivity extends AppCompatActivity {
                     addPlantToGarden(f, img);
                 }
             } else if (requestCode == REQUEST_DOCTOR_PICKER) {
-                // Copy the way from MainActivity
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
                     String base64Image = ImageUtils.bitmapToBase64(bitmap, 70);
@@ -297,11 +296,18 @@ public class MyGardenActivity extends AppCompatActivity {
             }
         }
 
-        if (plant.getCustomImageBase64() != null) {
-            byte[] decoded = Base64.decode(plant.getCustomImageBase64(), Base64.DEFAULT);
-            Glide.with(this).load(decoded).centerCrop().into(img);
-        } else if (plant.getFlower().getImageUrl() != null && !plant.getFlower().getImageUrl().isEmpty()) {
-            Glide.with(this).load(plant.getFlower().getImageUrl()).placeholder(R.drawable.ic_flower).into(img);
+        String finalImage = plant.getCustomImageBase64();
+        if (finalImage == null && plant.getFlower().getImageUrl() != null) {
+            finalImage = plant.getFlower().getImageUrl();
+        }
+
+        if (finalImage != null) {
+            if (finalImage.startsWith("http")) {
+                Glide.with(this).load(finalImage).placeholder(R.drawable.ic_flower).into(img);
+            } else {
+                byte[] decoded = Base64.decode(finalImage, Base64.DEFAULT);
+                Glide.with(this).load(decoded).centerCrop().into(img);
+            }
         }
 
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this).setView(dialogView).create();
@@ -314,9 +320,16 @@ public class MyGardenActivity extends AppCompatActivity {
             dialog.dismiss();
         });
 
+        String finalImageForDoctor = finalImage;
         btnCheckHealth.setOnClickListener(v -> {
             dialog.dismiss();
-            openDoctorImagePicker();
+            if (finalImageForDoctor != null) {
+                Intent intent = new Intent(this, DoctorActivity.class);
+                intent.putExtra("image", finalImageForDoctor);
+                startActivity(intent);
+            } else {
+                openDoctorImagePicker();
+            }
         });
 
         dialog.show();
