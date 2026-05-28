@@ -146,8 +146,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
             } catch (MqttException e) {
                 e.printStackTrace();
+                Throwable cause = e.getCause();
+                String detail = "rc=" + e.getReasonCode()
+                        + " msg=" + e.getMessage()
+                        + (cause != null ? " cause=" + cause.getClass().getSimpleName() + ":" + cause.getMessage() : "");
                 runOnUiThread(() -> {
-                    if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT error: " + e.getMessage());
+                    if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT error: " + detail);
                 });
             }
         }, "mqtt-init").start();
