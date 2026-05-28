@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -84,48 +85,72 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void startMQTT() {
+        // Clean up any previous client (Refresh button re-invokes this).
         try {
-            String clientId = MqttClient.generateClientId();
-            mqttClient = new MqttClient(BROKER_URL, clientId, new MemoryPersistence());
+            if (mqttClient != null && mqttClient.isConnected()) mqttClient.disconnect();
+        } catch (MqttException ignored) {}
+        mqttClient = null;
 
-            mqttClient.setCallback(new MqttCallback() {
-                @Override
-                public void connectionLost(Throwable cause) {
-                    runOnUiThread(() -> {
-                        if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT Disconnected");
-                    });
-                }
+        if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT: connecting...");
 
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    final String payload = new String(message.getPayload());
-                    runOnUiThread(() -> {
-                        try {
-                            int moistureValue = Integer.parseInt(payload.trim());
-                            MoistureData moistureData = new MoistureData(moistureValue, 0);
-                            if (tvMoistureDisplay != null) {
-                                tvMoistureDisplay.setText("MQTT: " + moistureValue + "% (" + moistureData.getMoistureStatus() + ")");
+        // Paho's connect() does blocking network I/O — must run off the UI thread.
+        new Thread(() -> {
+            try {
+                String clientId = MqttClient.generateClientId();
+                MqttClient client = new MqttClient(BROKER_URL, clientId, new MemoryPersistence());
+
+                client.setCallback(new MqttCallback() {
+                    @Override
+                    public void connectionLost(Throwable cause) {
+                        runOnUiThread(() -> {
+                            if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT Disconnected");
+                        });
+                    }
+
+                    @Override
+                    public void messageArrived(String topic, MqttMessage message) {
+                        final String payload = new String(message.getPayload());
+                        runOnUiThread(() -> {
+                            try {
+                                int moistureValue = Integer.parseInt(payload.trim());
+                                MoistureData moistureData = new MoistureData(moistureValue, 0);
+                                if (tvMoistureDisplay != null) {
+                                    tvMoistureDisplay.setText("MQTT: " + moistureValue + "% (" + moistureData.getMoistureStatus() + ")");
+                                }
+                                if (pbMoistureMain != null) {
+                                    pbMoistureMain.setProgress(moistureValue);
+                                    pbMoistureMain.setProgressTintList(android.content.res.ColorStateList.valueOf(moistureData.getStatusColor()));
+                                }
+                            } catch (NumberFormatException e) {
+                                if (tvMoistureDisplay != null) tvMoistureDisplay.setText("Soil: " + payload);
                             }
-                            if (pbMoistureMain != null) {
-                                pbMoistureMain.setProgress(moistureValue);
-                                pbMoistureMain.setProgressTintList(android.content.res.ColorStateList.valueOf(moistureData.getStatusColor()));
-                            }
-                        } catch (NumberFormatException e) {
-                            if (tvMoistureDisplay != null) tvMoistureDisplay.setText("Soil: " + payload);
-                        }
-                    });
-                }
+                        });
+                    }
 
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {}
-            });
+                    @Override
+                    public void deliveryComplete(IMqttDeliveryToken token) {}
+                });
 
-            mqttClient.connect();
-            mqttClient.subscribe(MQTT_TOPIC);
+                MqttConnectOptions opts = new MqttConnectOptions();
+                opts.setAutomaticReconnect(true);
+                opts.setCleanSession(true);
+                opts.setConnectionTimeout(10);
+                opts.setKeepAliveInterval(30);
 
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+                client.connect(opts);
+                client.subscribe(MQTT_TOPIC);
+                mqttClient = client;
+
+                runOnUiThread(() -> {
+                    if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT: connected, waiting for data...");
+                });
+            } catch (MqttException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    if (tvMoistureDisplay != null) tvMoistureDisplay.setText("MQTT error: " + e.getMessage());
+                });
+            }
+        }, "mqtt-init").start();
     }
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
