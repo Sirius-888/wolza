@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wolza Flower Garden</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    scroll-behavior:smooth;
+}
+
+:root{
+    --green:#0f3d2e;
+    --green2:#1b5e20;
+    --light:#f4fff5;
+    --accent:#ffe066;
+    --text:#1f2937;
+    --card:#ffffff;
+    --shadow:0 15px 40px rgba(0,0,0,0.08);
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(to bottom,#effff1,#dcf7df);
+    color:var(--text);
+    overflow-x:hidden;
+}
+
+/* NAVBAR */
+
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    backdrop-filter:blur(12px);
+    background:rgba(15,61,46,0.9);
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.nav-container{
+    max-width:1400px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 24px;
+}
+
+.logo{
+    color:white;
+    text-decoration:none;
+    font-size:1.8rem;
+    font-weight:800;
+}
+
+.logo span{
+    color:var(--accent);
+}
+
+.nav-links{
+    display:flex;
+    list-style:none;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.nav-links a{
+    text-decoration:none;
+    color:white;
+    padding:10px 18px;
+    border-radius:50px;
+    transition:0.3s;
+    font-size:0.95rem;
+    font-weight:500;
+}
+
+.nav-links a:hover{
+    background:var(--accent);
+    color:var(--green);
+}
+
+/* HERO */
+
+.hero{
+    min-height:95vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+    padding:40px 20px;
+}
+
+.hero::before{
+    content:'';
+    position:absolute;
+    width:700px;
+    height:700px;
+    background:radial-gradient(circle,var(--accent),transparent 70%);
+    opacity:0.2;
+    top:-250px;
+    right:-200px;
+}
+
+.hero-content{
+    max-width:1300px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    align-items:center;
+    z-index:2;
+}
+
+.hero-text h1{
+    font-size:5rem;
+    line-height:1;
+    color:var(--green);
+    font-weight:800;
+}
+
+.hero-text h1 span{
+    color:#ffb703;
+}
+
+.hero-text p{
+    margin-top:25px;
+    font-size:1.2rem;
+    line-height:1.8;
+    max-width:650px;
+}
+
+.hero-buttons{
+    margin-top:35px;
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    padding:16px 30px;
+    border:none;
+    border-radius:60px;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-primary{
+    background:var(--green);
+    color:white;
+    box-shadow:var(--shadow);
+}
+
+.btn-primary:hover{
+    transform:translateY(-4px);
+}
+
+.btn-secondary{
+    background:white;
+    color:var(--green);
+    border:2px solid var(--green);
+}
+
+.btn-secondary:hover{
+    background:var(--green);
+    color:white;
+}
+
+.hero-card{
+    background:white;
+    padding:30px;
+    border-radius:35px;
+    box-shadow:var(--shadow);
+    position:relative;
+}
+
+.hero-card img{
+    width:100%;
+    border-radius:24px;
+}
+
+/* FLOATING */
+
+.float{
+    position:absolute;
+    background:white;
+    border-radius:25px;
+    padding:15px 20px;
+    box-shadow:var(--shadow);
+    animation:float 4s ease-in-out infinite;
+}
+
+.float1{
+    top:60px;
+    right:40px;
+}
+
+.float2{
+    bottom:60px;
+    left:40px;
+}
+
+@keyframes float{
+    0%{transform:translateY(0)}
+    50%{transform:translateY(-12px)}
+    100%{transform:translateY(0)}
+}
+
+/* CONTAINER */
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:20px;
+}
+
+/* SECTIONS */
+
+.section{
+    margin:100px 0;
+}
+
+.section-title{
+    text-align:center;
+    font-size:3rem;
+    color:var(--green);
+    margin-bottom:20px;
+    font-weight:800;
+}
+
+.section-sub{
+    text-align:center;
+    max-width:800px;
+    margin:auto;
+    color:#5b6472;
+    line-height:1.8;
+    margin-bottom:50px;
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:28px;
+}
+
+.card{
+    background:var(--card);
+    padding:35px;
+    border-radius:30px;
+    transition:0.35s;
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:'';
+    position:absolute;
+    width:150px;
+    height:150px;
+    background:linear-gradient(to bottom,var(--accent),transparent);
+    border-radius:50%;
+    top:-70px;
+    right:-70px;
+    opacity:0.2;
+}
+
+.card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 20px 40px rgba(0,0,0,0.1);
+}
+
+.icon{
+    font-size:3rem;
+    margin-bottom:18px;
+}
+
+.card h3{
+    color:var(--green);
+    margin-bottom:12px;
+    font-size:1.4rem;
+}
+
+.card p{
+    color:#5b6472;
+    line-height:1.7;
+}
+
+/* FLOWERS */
+
+.flowers{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:24px;
+}
+
+.flower{
+    background:white;
+    border-radius:28px;
+    text-align:center;
+    padding:35px 20px;
+    transition:0.3s;
+    box-shadow:var(--shadow);
+}
+
+.flower:hover{
+    transform:scale(1.03);
+}
+
+.flower .emoji{
+    font-size:4rem;
+}
+
+.flower h4{
+    margin:15px 0 10px;
+    color:var(--green);
+    font-size:1.3rem;
+}
+
+/* BANNER */
+
+.banner{
+    background:linear-gradient(135deg,#0f3d2e,#1b5e20);
+    color:white;
+    border-radius:40px;
+    padding:60px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+}
+
+.banner::before{
+    content:'🌿';
+    position:absolute;
+    font-size:12rem;
+    opacity:0.07;
+    top:-20px;
+    right:30px;
+}
+
+.banner h2{
+    font-size:3rem;
+    margin-bottom:20px;
+}
+
+.banner p{
+    max-width:800px;
+    margin:auto;
+    line-height:1.8;
+}
+
+/* TECH */
+
+.tech{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:18px;
+}
+
+.tech span{
+    background:white;
+    padding:14px 24px;
+    border-radius:50px;
+    font-weight:600;
+    box-shadow:var(--shadow);
+}
+
+/* FOOTER */
+
+footer{
+    margin-top:100px;
+    background:var(--green);
+    color:white;
+    padding:60px 20px;
+}
+
+.footer-container{
+    max-width:1400px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:40px;
+}
+
+footer h3{
+    margin-bottom:18px;
+    color:var(--accent);
+}
+
+footer p{
+    line-height:1.8;
+    color:#d9e6dd;
+}
+
+footer ul{
+    list-style:none;
+}
+
+footer li{
+    margin-bottom:10px;
+}
+
+footer a{
+    text-decoration:none;
+    color:#d9e6dd;
+}
+
+footer a:hover{
+    color:var(--accent);
+}
+
+.copyright{
+    text-align:center;
+    margin-top:50px;
+    opacity:0.8;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+.hero-content{
+    grid-template-columns:1fr;
+}
+
+.hero-text{
+    text-align:center;
+}
+
+.hero-text p{
+    margin:auto;
+    margin-top:25px;
+}
+
+.hero-buttons{
+    justify-content:center;
+}
+
+.hero-text h1{
+    font-size:3.4rem;
+}
+}
+
+@media(max-width:768px){
+
+.nav-container{
+    flex-direction:column;
+    gap:20px;
+}
+
+.nav-links{
+    justify-content:center;
+}
+
+.hero{
+    min-height:auto;
+    padding-top:60px;
+}
+
+.hero-text h1{
+    font-size:2.6rem;
+}
+
+.section-title{
+    font-size:2.2rem;
+}
+
+.banner{
+    padding:40px 25px;
+}
+
+.banner h2{
+    font-size:2rem;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+<div class="nav-container">
+
+<a href="#" class="logo">
+🌿 Wolza<span>Garden</span>
+</a>
+
+<ul class="nav-links">
+<li><a href="#features">Функции</a></li>
+<li><a href="#flowers">Цветы</a></li>
+<li><a href="#ai">AI</a></li>
+<li><a href="#tech">Технологии</a></li>
+<li><a href="#contact">Контакты</a></li>
+<li><a href="a.html">Бесплатный вебинар</a></li>
+</ul>
+
+</div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="hero-content">
+
+<div class="hero-text">
+
+<h1>
+Умный <span>садовод</span><br>
+в твоём телефоне
+</h1>
+
+<p>
+Определяй растения по фото, следи за влажностью почвы через Arduino,
+лечи болезни растений и создай свой виртуальный сад будущего 🌱
+</p>
+
+<div class="hero-buttons">
+<button class="btn btn-primary">
+📲 Скачать приложение(APK file)
+</button>
+
+<button class="btn btn-secondary">
+🎮 Попробовать демо
+</button>
+</div>
+
+</div>
+
+<div class="hero-card">
+
+<div class="float float1">
+💧 Влажность: 72%
+</div>
+
+<div class="float float2">
+🌸 Роза здорова
+</div>
+
+<img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200&auto=format&fit=crop" alt="Garden">
+
+</div>
+
+</div>
+
+</section>
+
+<div class="container">
+
+<!-- FEATURES -->
+
+<section class="section" id="features">
+
+<h2 class="section-title">
+✨ Возможности Wolza
+</h2>
+
+<p class="section-sub">
+Современная экосистема для садоводов с AI, IoT и игровыми механиками
+</p>
+
+<div class="grid">
+
+<div class="card">
+<div class="icon">🔍</div>
+<h3>AI Определение</h3>
+<p>
+Распознавание растений и болезней по фото с использованием нейросетей.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">💧</div>
+<h3>Умный полив</h3>
+<p>
+Подключай датчики влажности Arduino и следи за состоянием почвы.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">🩺</div>
+<h3>Plant Doctor</h3>
+<p>
+AI анализирует листья и предлагает лечение растений.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">🌸</div>
+<h3>Виртуальный сад</h3>
+<p>
+Выращивай цифровые растения и получай достижения.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">🛒</div>
+<h3>Marketplace</h3>
+<p>
+Покупай и продавай растения, семена и оборудование.
+</p>
+</div>
+
+<div class="card">
+<div class="icon">🌍</div>
+<h3>Сообщество</h3>
+<p>
+Общайся с садоводами со всего мира и делись опытом.
+</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- FLOWERS -->
+
+<section class="section" id="flowers">
+
+<h2 class="section-title">
+🌺 Популярные растения
+</h2>
+
+<div class="flowers">
+
+<div class="flower">
+<div class="emoji">🌹</div>
+<h4>Роза</h4>
+<p>Королева цветов</p>
+</div>
+
+<div class="flower">
+<div class="emoji">🌻</div>
+<h4>Подсолнух</h4>
+<p>Символ солнца</p>
+</div>
+
+<div class="flower">
+<div class="emoji">🌷</div>
+<h4>Тюльпан</h4>
+<p>Весенний цветок</p>
+</div>
+
+<div class="flower">
+<div class="emoji">🌸</div>
+<h4>Сакура</h4>
+<p>Японская красота</p>
+</div>
+
+<div class="flower">
+<div class="emoji">🌺</div>
+<h4>Гибискус</h4>
+<p>Тропическая энергия</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- AI -->
+
+<section class="section" id="ai">
+
+<div class="banner">
+
+<h2>
+🤖 AI + IoT Garden System
+</h2>
+
+<p>
+Wolza объединяет Machine Learning, Arduino, Bluetooth и аналитику
+в одну интеллектуальную платформу для ухода за растениями.
+</p>
+
+<div class="hero-buttons" style="justify-content:center;margin-top:35px;">
+<button class="btn btn-primary">
+🚀 Начать сейчас
+</button>
+</div>
+
+</div>
+
+</section>
+
+<!-- TECH -->
+
+<section class="section" id="tech">
+
+<h2 class="section-title">
+🛠️ Технологии
+</h2>
+
+<div class="tech">
+
+<span>Android Java</span>
+<span>Firebase</span>
+<span>Firestore</span>
+<span>Plant.id API</span>
+<span>Arduino Uno</span>
+<span>HC-06 Bluetooth</span>
+<span>Machine Learning</span>
+<span>Cloud Messaging</span>
+<span>IoT Sensors</span>
+
+</div>
+
+</section>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer id="contact">
+
+<div class="footer-container">
+
+<div>
+<h3>🌿 Wolza Garden</h3>
+<p>
+Платформа нового поколения для умного садоводства,
+AI-диагностики и IoT-полива.
+</p>
+</div>
+
+<div>
+<h3>Навигация</h3>
+<ul>
+<li><a href="#">Главная</a></li>
+<li><a href="#features">Функции</a></li>
+<li><a href="#flowers">Цветы</a></li>
+<li><a href="#tech">Технологии</a></li>
+<li><a href="index copy.html">V2</a></li>
+</ul>
+</div>
+
+<div>
+<h3>Контакты</h3>
+<p>
+📧 wolza@flowergarden.com
+<br><br>
+📱 Telegram: @wolza_support
+</p>
+</div>
+
+</div>
+
+<div class="copyright">
+© 2026 Wolza Flower Garden — All Rights Reserved
+</div>
+
+</footer>
+
+</body>
+</html>
