@@ -43,7 +43,17 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String uid = "default";
+        try {
+            com.google.firebase.auth.FirebaseAuth mAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+            com.google.firebase.auth.FirebaseUser user = mAuth.getCurrentUser();
+            if (user != null) {
+                uid = user.getUid();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sharedPreferences = getSharedPreferences(PREFS_NAME + "_" + uid, Context.MODE_PRIVATE);
 
         initViews();
         setupToolbar();
@@ -140,35 +150,24 @@ public class HistoryActivity extends AppCompatActivity {
         int selectedColor = getColor(android.R.color.white);
         int unselectedColor = getColor(R.color.text_secondary);
 
+        // Reset all to unselected
+        tabAll.setBackgroundResource(R.drawable.tab_unselected);
+        tabAll.setTextColor(unselectedColor);
+        tabSearch.setBackgroundResource(R.drawable.tab_unselected);
+        tabSearch.setTextColor(unselectedColor);
+        tabDoctor.setBackgroundResource(R.drawable.tab_unselected);
+        tabDoctor.setTextColor(unselectedColor);
+
+        // Apply selected state
         if ("all".equals(currentTab)) {
             tabAll.setBackgroundResource(R.drawable.tab_selected);
             tabAll.setTextColor(selectedColor);
-
-            tabSearch.setBackgroundResource(R.drawable.tab_unselected);
-            tabSearch.setTextColor(unselectedColor);
-
-            tabDoctor.setBackgroundResource(R.drawable.tab_unselected);
-            tabDoctor.setTextColor(unselectedColor);
-
         } else if ("search".equals(currentTab)) {
             tabSearch.setBackgroundResource(R.drawable.tab_selected);
             tabSearch.setTextColor(selectedColor);
-
-            tabAll.setBackgroundResource(R.drawable.tab_unselected);
-            tabAll.setTextColor(unselectedColor);
-
-            tabDoctor.setBackgroundResource(R.drawable.tab_unselected);
-            tabDoctor.setTextColor(unselectedColor);
-
         } else if ("doctor".equals(currentTab)) {
             tabDoctor.setBackgroundResource(R.drawable.tab_selected);
             tabDoctor.setTextColor(selectedColor);
-
-            tabAll.setBackgroundResource(R.drawable.tab_unselected);
-            tabAll.setTextColor(unselectedColor);
-
-            tabSearch.setBackgroundResource(R.drawable.tab_unselected);
-            tabSearch.setTextColor(unselectedColor);
         }
     }
 
@@ -177,17 +176,9 @@ public class HistoryActivity extends AppCompatActivity {
 
         if ("all".equals(currentTab)) {
             currentList.addAll(allHistory);
-
-        } else if ("search".equals(currentTab)) {
+        } else {
             for (HistoryItem item : allHistory) {
-                if ("search".equals(item.getType())) {
-                    currentList.add(item);
-                }
-            }
-
-        } else if ("doctor".equals(currentTab)) {
-            for (HistoryItem item : allHistory) {
-                if ("doctor".equals(item.getType())) {
+                if (currentTab.equals(item.getType())) {
                     currentList.add(item);
                 }
             }
@@ -231,7 +222,18 @@ public class HistoryActivity extends AppCompatActivity {
 
     // Static helper to add history
     public static void addToHistory(Context context, String type, String name, String description, String imageUrl) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String uid = "default";
+        try {
+            com.google.firebase.auth.FirebaseAuth mAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+            com.google.firebase.auth.FirebaseUser user = mAuth.getCurrentUser();
+            if (user != null) {
+                uid = user.getUid();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME + "_" + uid, Context.MODE_PRIVATE);
         String json = prefs.getString(KEY_HISTORY, "");
 
         List<HistoryItem> historyList = new ArrayList<>();

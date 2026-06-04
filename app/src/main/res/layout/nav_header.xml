@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="180dp"
-    android:background="?attr/colorPrimary"
+    android:background="@color/brand_primary"
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:padding="16dp"
@@ -15,16 +15,16 @@
         android:layout_height="80dp"
         android:src="@drawable/ic_profile"
         app:civ_border_width="2dp"
-        app:civ_border_color="@android:color/white" />
+        app:civ_border_color="@color/white" />
 
     <TextView
         android:id="@+id/tvWelcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome, User!"
+        android:text="@string/welcome_banner_title"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         android:layout_marginTop="8dp" />
 
     <TextView
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:text="user@example.com"
         android:textSize="14sp"
-        android:textColor="@android:color/white"
+        android:textColor="@color/brand_light"
         android:layout_marginTop="4dp" />
 
 </LinearLayout>

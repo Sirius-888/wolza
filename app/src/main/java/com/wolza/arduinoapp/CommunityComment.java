@@ -13,16 +13,27 @@ public class CommunityComment implements Serializable {
     private String userAvatar;
     private String content;
     private long timestamp;
+    private String replyToCommentId;   // null = top-level comment
+    private String replyToUserName;    // name of the person being replied to
 
     public CommunityComment() {}
 
-    public CommunityComment(String postId, String userId, String userName, String userAvatar, String content, long timestamp) {
+    public CommunityComment(String postId, String userId, String userName, String userAvatar,
+                            String content, long timestamp) {
+        this(postId, userId, userName, userAvatar, content, timestamp, null, null);
+    }
+
+    public CommunityComment(String postId, String userId, String userName, String userAvatar,
+                            String content, long timestamp,
+                            String replyToCommentId, String replyToUserName) {
         this.postId = postId;
         this.userId = userId;
         this.userName = userName;
         this.userAvatar = userAvatar;
         this.content = content;
         this.timestamp = timestamp;
+        this.replyToCommentId = replyToCommentId;
+        this.replyToUserName = replyToUserName;
     }
 
     public String getId() { return id; }
@@ -39,6 +50,10 @@ public class CommunityComment implements Serializable {
     public void setContent(String content) { this.content = content; }
     public long getTimestamp() { return timestamp; }
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    public String getReplyToCommentId() { return replyToCommentId; }
+    public void setReplyToCommentId(String id) { this.replyToCommentId = id; }
+    public String getReplyToUserName() { return replyToUserName; }
+    public void setReplyToUserName(String name) { this.replyToUserName = name; }
 
     public String getFormattedTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());

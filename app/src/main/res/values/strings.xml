@@ -21,6 +21,8 @@
 
     <!-- Main Activity strings -->
     <string name="welcome_message">Welcome, %1$s!</string>
+    <string name="welcome_banner_title">Welcome, Flower Lover!</string>
+    <string name="welcome_banner_subtitle">Your garden is looking great today.</string>
     <string name="home">Home</string>
     <string name="profile">Profile</string>
     <string name="favorites">Favorites</string>
@@ -29,6 +31,59 @@
     <string name="rate_us">Rate Us</string>
     <string name="about">About</string>
     <string name="logout">Logout</string>
+    <string name="my_garden">My Garden</string>
+    <string name="community">Community</string>
+    <string name="history">History</string>
+    <string name="watering_reminders">Watering Reminders</string>
+    
+    <!-- Dashboard Cards -->
+    <string name="search">Search</string>
+    <string name="wifi_data">WIFI DATA</string>
+    <string name="doctor">Doctor</string>
+    <string name="care">Care</string>
+    <string name="market">Market</string>
+    <string name="reminders">Reminders</string>
+    <string name="garden_status">Garden Status</string>
+    <string name="my_plant">My Plant</string>
+    <string name="community_hub">Community Hub</string>
+    <string name="community_hub_subtitle">Ask questions &amp; join plant groups</string>
+    <string name="reels">Reels</string>
+
+    <!-- Care Options Dialog -->
+    <string name="plant_care_title">Plant Care</string>
+    <string name="ai_assistant_option">🤖 AI Plant Assistant</string>
+    <string name="smart_tracker_option">📋 Smart Tracker</string>
+    <string name="vacation_mode_option">📅 Vacation Mode</string>
+    
+    <!-- Search Options Dialog -->
+    <string name="search_flowers_title">Search Flowers</string>
+    <string name="manual_search_option">📖 Manual Search</string>
+    <string name="auto_identify_option">📸 Auto Identify</string>
+
+    <!-- Vacation Mode -->
+    <string name="vacation_mode_title">Vacation Mode</string>
+    <string name="plan_your_absence">Plan Your Absence</string>
+    <string name="vacation_subtitle">Select your departure and return dates to calculate watering needs.</string>
+    <string name="departure">🛫 Departure</string>
+    <string name="return_label">🛬 Return</string>
+    <string name="dates_not_selected">Dates: Not selected</string>
+    <string name="your_plants">Your Plants</string>
+    <string name="loading_plants">Loading plants...</string>
+    <string name="watering_requirements">Watering Requirements</string>
+    <string name="total_water_needed">Total Water Needed: %1$d ml</string>
+    <string name="save_vacation_plan">💾 Save Vacation Plan</string>
+    <string name="vacation_note">Note: Calculation is based on typical water amounts for each plant type.</string>
+    
+    <string name="water_amount_label">Water amount: %1$d ml</string>
+    <string name="weekly_frequency_label">Weekly frequency: %1$d times</string>
+    <string name="total_sessions_label">Total sessions: %1$d</string>
+    <string name="total_water_label">Total water: %1$d ml</string>
+
+    <!-- Market -->
+    <string name="official_wolza_shop">Official Wolza Shop</string>
+    <string name="plants_tab">Plants</string>
+    <string name="tools_tab">Tools</string>
+    <string name="wolza_shop_tab">Wolza Shop</string>
 
     <!-- Error messages -->
     <string name="error_field_required">This field is required</string>
@@ -46,29 +101,25 @@
     <string name="logout_success">Logged out successfully</string>
     <string name="account_created_login">Account created! Please login with your credentials.</string>
 
-    <!-- ===== ADD THESE TWO LINES ===== -->
     <!-- Navigation drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <!-- =============================== -->
 
     <!-- About dialog -->
     <string name="about_title">About</string>
-    <string name="about_message">App Name: ComWolza Arduino\nVersion: 1.0\nDeveloped by: Your Name</string>
+    <string name="about_message">App Name: Wolza\nVersion: 1.0\nDeveloped by: Wolza Team</string>
     <string name="ok">OK</string>
 
-    <!-- Arduino specific (optional) -->
+    <!-- Arduino specific -->
     <string name="connect_device">Connect to Arduino</string>
     <string name="disconnect">Disconnect</string>
     <string name="scan_devices">Scan for Devices</string>
     <string name="no_devices">No devices found</string>
-    <string name="search_flowers">Search Flowers</string>
     <string name="search_hint">Search by flower name...</string>
     <string name="flowers_found">%d flowers found</string>
     <string name="no_flowers_found">No flowers found</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
-
 
     <string name="bluetooth_connecting">Connecting to Arduino...</string>
     <string name="bluetooth_connected">Connected to HC-06</string>
@@ -77,4 +128,9 @@
     <string name="moisture_good">🌿 Soil is moist - Good!</string>
     <string name="arduino_not_found">HC-06 not found. Check Arduino power.</string>
     <string name="default_web_client_id">1050637254587-k2fdlc153ed5k3hmirj2hrduvdcd1rti.apps.googleusercontent.com</string>
+
+    <!-- Language specific -->
+    <string name="change_language">Change Language</string>
+    <string name="english">English</string>
+    <string name="russian">Russian</string>
 </resources>

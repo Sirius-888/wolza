@@ -14,41 +14,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#F8FBF8">
+        android:background="@color/background_main">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#2E7D32"
+            android:background="@drawable/toolbar_gradient"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="@android:color/white" />
+            app:titleTextColor="@color/white" />
 
         <!-- Welcome Banner -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp"
-            android:background="#2E7D32"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="28dp"
+            android:background="@drawable/toolbar_gradient"
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/tvWelcomeMessage"
+                android:id="@+id/tvDashboardWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Welcome, Flower Lover!"
+                android:text="@string/welcome_banner_title"
                 android:textSize="26sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tvDashboardSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your garden is looking great today."
+                android:text="@string/welcome_banner_subtitle"
                 android:textSize="14sp"
-                android:textColor="#C8E6C9"
+                android:textColor="@color/primary_light_cream"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
@@ -81,6 +85,7 @@
                         android:layout_margin="8dp"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
                         <LinearLayout
@@ -88,8 +93,8 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center">
-                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_search" app:tint="#4CAF50" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Search" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="#333333"/>
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_search" app:tint="@color/icon_search" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/search" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="@color/text_heading"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -102,6 +107,7 @@
                         android:layout_margin="8dp"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
                         <LinearLayout
@@ -109,8 +115,8 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center">
-                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_wifi" app:tint="#2196F3" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="WIFI DATA" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="#333333"/>
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_wifi" app:tint="@color/icon_wifi" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/wifi_data" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="@color/text_heading"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -123,6 +129,7 @@
                         android:layout_margin="8dp"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
                         <LinearLayout
@@ -130,8 +137,8 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center">
-                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_doctor" app:tint="#F44336" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Doctor" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="#333333"/>
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_doctor" app:tint="@color/icon_doctor" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/doctor" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="@color/text_heading"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -144,6 +151,7 @@
                         android:layout_margin="8dp"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
                         <LinearLayout
@@ -151,8 +159,8 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center">
-                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_care" app:tint="#FF9800" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Care" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="#333333"/>
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_care" app:tint="@color/icon_care" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/care" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="@color/text_heading"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -165,6 +173,7 @@
                         android:layout_margin="8dp"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
                         <LinearLayout
@@ -172,8 +181,8 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center">
-                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_market" app:tint="#2196F3" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Market" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="#333333"/>
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_market" app:tint="@color/icon_market" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/market" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="@color/text_heading"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -186,6 +195,7 @@
                         android:layout_margin="8dp"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
                         <LinearLayout
@@ -193,8 +203,8 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center">
-                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_reminder" app:tint="#9C27B0" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reminders" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="#333333"/>
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_reminder" app:tint="@color/icon_reminder" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reminders" android:textStyle="bold" android:layout_marginTop="8dp" android:textColor="@color/text_heading"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -204,10 +214,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Garden Status"
+                    android:text="@string/garden_status"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#444444"
+                    android:textColor="@color/primary_dark_forest"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"/>
@@ -220,6 +230,7 @@
                     android:layout_margin="8dp"
                     app:cardCornerRadius="24dp"
                     app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/card_surface"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true">
@@ -228,8 +239,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="20dp"
-                        android:background="#FFFFFF">
+                        android:padding="20dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -242,7 +252,7 @@
                                 android:layout_height="64dp"
                                 android:src="@drawable/ic_flower"
                                 app:civ_border_width="2dp"
-                                app:civ_border_color="#E8F5E9" />
+                                app:civ_border_color="@color/primary_light_cream" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -254,10 +264,10 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="My Plant"
+                                    android:text="@string/my_plant"
                                     android:textSize="20sp"
                                     android:textStyle="bold"
-                                    android:textColor="#2E7D32" />
+                                    android:textColor="@color/primary_dark_forest" />
 
                                 <TextView
                                     android:id="@+id/tvMoistureDisplay"
@@ -265,7 +275,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="Status: Connecting..."
                                     android:textSize="14sp"
-                                    android:textColor="#757575"
+                                    android:textColor="@color/text_body"
                                     android:layout_marginTop="2dp" />
                             </LinearLayout>
 
@@ -273,7 +283,7 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_arrow_forward"
-                                app:tint="#BDBDBD" />
+                                app:tint="@color/text_light" />
                         </LinearLayout>
 
                         <ProgressBar
@@ -284,7 +294,7 @@
                             android:layout_marginTop="20dp"
                             android:progress="0"
                             android:max="100"
-                            android:progressTint="#4CAF50" />
+                            android:progressTint="@color/primary_sage" />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -298,6 +308,7 @@
                     android:layout_marginBottom="32dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/card_surface"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:clickable="true">
 
@@ -306,14 +317,13 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:padding="20dp"
-                        android:background="#FFFFFF">
+                        android:padding="20dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_community"
-                            app:tint="#9C27B0" />
+                            app:tint="@color/primary_sage" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -325,24 +335,24 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Community Hub"
+                                android:text="@string/community_hub"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
-                                android:textColor="#333333" />
+                                android:textColor="@color/text_heading" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ask questions &amp; join plant groups"
+                                android:text="@string/community_hub_subtitle"
                                 android:textSize="13sp"
-                                android:textColor="#757575" />
+                                android:textColor="@color/text_body" />
                         </LinearLayout>
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_arrow_forward"
-                            app:tint="#BDBDBD" />
+                            app:tint="@color/text_light" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 

@@ -1,28 +1,33 @@
 package com.wolza.arduinoapp;
 
+import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.UUID;
 
 public class AddPostActivity extends AppCompatActivity {
@@ -40,7 +45,19 @@ public class AddPostActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    private static final int PICK_IMAGE_REQUEST = 1;
+    private String currentUserName = "Anonymous";
+    private String currentUserAvatar = "";
+
+    private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    imageUri = uri;
+                    ivSelectedImage.setVisibility(View.VISIBLE);
+                    Glide.with(this).load(imageUri).into(ivSelectedImage);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +77,7 @@ public class AddPostActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         initViews();
+        loadUserData();
         setupClickListeners();
     }
 
@@ -73,32 +91,29 @@ public class AddPostActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
+    private void loadUserData() {
+        if (currentUser == null) return;
+        db.collection("users").document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        String name = document.getString("name");
+                        currentUserName = (name != null && !name.isEmpty()) ? name : 
+                                (currentUser.getEmail() != null ? currentUser.getEmail().split("@")[0] : "User");
+                        String avatar = document.getString("avatar");
+                        if (avatar != null) currentUserAvatar = avatar;
+                    }
+                });
+    }
+
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
 
         btnSelectImage.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            imagePickerLauncher.launch("image/*");
         });
 
         btnPost.setOnClickListener(v -> uploadPost());
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                ivSelectedImage.setImageBitmap(bitmap);
-                ivSelectedImage.setVisibility(View.VISIBLE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void uploadPost() {
@@ -118,35 +133,32 @@ public class AddPostActivity extends AppCompatActivity {
         showLoading(true);
 
         if (imageUri != null) {
-            uploadImageAndPost(title, content);
+            try {
+                // Resize to max 500px to keep Firestore payload size within limits (1MB limit)
+                android.graphics.Bitmap resizedBitmap = ImageUtils.handleImageUri(this, imageUri, 500);
+                if (resizedBitmap != null) {
+                    String base64Image = ImageUtils.bitmapToBase64(resizedBitmap, 60);
+                    String dataUrl = "data:image/jpeg;base64," + base64Image;
+                    savePostToFirestore(title, content, dataUrl);
+                } else {
+                    showLoading(false);
+                    Toast.makeText(this, "Cannot process selected image", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                showLoading(false);
+                Toast.makeText(this, "Error processing image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         } else {
             savePostToFirestore(title, content, "");
         }
     }
 
-    private void uploadImageAndPost(String title, String content) {
-        String fileName = UUID.randomUUID().toString();
-        StorageReference ref = storage.getReference().child("post_images/" + fileName);
-
-        ref.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                    savePostToFirestore(title, content, uri.toString());
-                }))
-                .addOnFailureListener(e -> {
-                    showLoading(false);
-                    Toast.makeText(AddPostActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
     private void savePostToFirestore(String title, String content, String imageUrl) {
-        String userName = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "Anonymous";
-        String userAvatar = currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "";
-
         CommunityPost post = new CommunityPost(
                 groupId,
                 currentUser.getUid(),
-                userName,
-                userAvatar,
+                currentUserName,
+                currentUserAvatar,
                 title,
                 content,
                 imageUrl,

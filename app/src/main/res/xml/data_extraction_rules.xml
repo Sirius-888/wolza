@@ -6,9 +6,6 @@
 
         <!-- Back up database -->
         <include domain="database" path="."/>
-
-        <!-- Don't back up cache -->
-        <exclude domain="file" path="cache"/>
     </cloud-backup>
 
     <device-transfer>
@@ -17,8 +14,5 @@
 
         <!-- Transfer database -->
         <include domain="database" path="."/>
-
-        <!-- Don't transfer cache -->
-        <exclude domain="file" path="cache"/>
     </device-transfer>
 </data-extraction-rules>

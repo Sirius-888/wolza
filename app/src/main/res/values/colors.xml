@@ -1,121 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- ═══════════════════════════════════════════════
+         WOLZA PLANT APP — PREMIUM REDESIGN PALETTE
+         Deep Jungle + Warm Amber + Soft Cream
+    ═══════════════════════════════════════════════ -->
 
-    <!-- Basic Colors -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="gray">#FF9E9E9E</color>
-    <color name="light_gray">#FFF5F5F5</color>
-    <color name="dark_gray">#FF757575</color>
+    <!-- Primary Brand — Deep Jungle Green -->
+    <color name="brand_primary">#1A6B3A</color>
+    <color name="brand_primary_dark">#0D3D21</color>
+    <color name="brand_primary_mid">#2E8B57</color>
 
-    <!-- Status Colors -->
-    <color name="error_red">#FFD32F2F</color>
-    <color name="success_green">#FF4CAF50</color>
-    <color name="warning_yellow">#FFFFC107</color>
-    <color name="info_blue">#FF2196F3</color>
+    <!-- Accent — Warm Amber / Gold -->
+    <color name="brand_accent">#F4A61D</color>
+    <color name="brand_accent_dark">#D4891A</color>
+    <color name="brand_accent_light">#FDE8B4</color>
 
-    <!-- Transparent -->
-    <color name="transparent">#00000000</color>
-    <color name="semi_transparent">#80000000</color>
+    <!-- Surface / Backgrounds -->
+    <color name="brand_background">#F3F7F4</color>     <!-- Very light sage -->
+    <color name="card_surface">#FFFFFF</color>
+    <color name="card_surface_tinted">#F0FAF4</color>  <!-- Soft green tinted card -->
 
-    <!-- ===== FLOWER APP SPECIFIC COLORS ===== -->
+    <!-- Brand Light -->
+    <color name="brand_light">#C8EAD3</color>          <!-- Mint cream -->
 
-    <!-- Primary Green Theme -->
-    <color name="primary_green">#4CAF50</color>
-    <color name="primary_dark_green">#388E3C</color>
-    <color name="primary_light_green">#C8E6C9</color>
-    <color name="primary_green_transparent">#804CAF50</color>
+    <!-- Neutrals -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#131A12</color>
+    <color name="gray_dark">#374140</color>
+    <color name="gray_medium">#8C9E99</color>
+    <color name="gray_light">#DDE9E3</color>
+    <color name="light_gray">#EEF4F0</color>
 
-    <!-- Accent Colors for Buttons -->
-    <color name="accent_orange">#FF9800</color>
-    <color name="accent_red">#F44336</color>
-    <color name="accent_blue">#2196F3</color>
-    <color name="accent_purple">#9C27B0</color>
-    <color name="accent_yellow">#FFC107</color>
-    <color name="accent_pink">#E91E63</color>
-    <color name="accent_brown">#795548</color>
+    <!-- Text -->
+    <color name="text_heading">#0D3D21</color>
+    <color name="text_body">#374140</color>
+    <color name="text_light">#8C9E99</color>
+    <color name="text_secondary">#8C9E99</color>
+    <color name="text_on_primary">#FFFFFF</color>
 
-    <!-- Text Colors -->
-    <color name="text_primary">#333333</color>
-    <color name="text_secondary">#757575</color>
-    <color name="text_hint">#BDBDBD</color>
-    <color name="text_disabled">#E0E0E0</color>
+    <!-- Component Aliases -->
+    <color name="background_main">@color/brand_background</color>
+    <color name="primary_sage">@color/brand_primary</color>
+    <color name="primary_light_cream">@color/brand_light</color>
+    <color name="primary_dark_forest">@color/brand_primary_dark</color>
+    <color name="accent_gold">@color/brand_accent</color>
 
-    <!-- Background Colors -->
-    <color name="background_light">#F5F5F5</color>
-    <color name="background_dark">#121212</color>
-    <color name="background_card">#FFFFFF</color>
+    <!-- ── PER-CARD ICON TINTS (each unique) ── -->
+    <color name="icon_search">#1A6B3A</color>       <!-- Jungle Green -->
+    <color name="icon_wifi">#2563EB</color>          <!-- Vivid Blue -->
+    <color name="icon_doctor">#DC2626</color>        <!-- Warm Red -->
+    <color name="icon_care">#F4A61D</color>          <!-- Amber -->
+    <color name="icon_market">#0891B2</color>        <!-- Cyan Teal -->
+    <color name="icon_reminder">#7C3AED</color>      <!-- Rich Violet -->
+    <color name="icon_community">#059669</color>     <!-- Emerald -->
+    <color name="icon_plant">#1A6B3A</color>         <!-- Jungle Green -->
 
-    <!-- Flower Theme Colors -->
-    <color name="flower_rose">#E91E63</color>      <!-- Pink -->
-    <color name="flower_lily">#9C27B0</color>      <!-- Purple -->
-    <color name="flower_sunflower">#FFC107</color> <!-- Yellow -->
-    <color name="flower_tulip">#FF5722</color>     <!-- Orange -->
-    <color name="flower_orchid">#AA00FF</color>    <!-- Violet -->
-    <color name="flower_daisy">#FFFFFF</color>     <!-- White -->
-    <color name="flower_lavender">#E1BEE7</color>  <!-- Light Purple -->
-    <color name="flower_jasmine">#FFF9C4</color>   <!-- Light Yellow -->
-    <color name="flower_hibiscus">#FF5252</color>  <!-- Red -->
+    <!-- ── STATUS COLORS ── -->
+    <color name="moisture_dry">#EF4444</color>
+    <color name="moisture_moderate">#F59E0B</color>
+    <color name="moisture_good">#10B981</color>
 
-    <!-- Gradient Colors -->
-    <color name="gradient_start">#4CAF50</color>
-    <color name="gradient_end">#8BC34A</color>
-    <color name="gradient_orange_start">#FF9800</color>
-    <color name="gradient_orange_end">#FF5722</color>
-    <color name="gradient_blue_start">#2196F3</color>
-    <color name="gradient_blue_end">#03A9F4</color>
-
-    <!-- Border/Stroke Colors -->
-    <color name="border_light">#E0E0E0</color>
-    <color name="border_medium">#BDBDBD</color>
-    <color name="border_dark">#9E9E9E</color>
-
-    <!-- Shadow Colors -->
-    <color name="shadow_light">#1E000000</color>
-    <color name="shadow_medium">#33000000</color>
-    <color name="shadow_dark">#4D000000</color>
-
-    <!-- Specific UI Element Colors -->
-    <color name="toolbar_background">#4CAF50</color>
-    <color name="status_bar">#388E3C</color>
-    <color name="nav_header_background">#4CAF50</color>
-    <color name="fab_background">#4CAF50</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="divider">#F0F0F0</color>
-
-    <!-- Search Bar Colors -->
-    <color name="search_background">#FFFFFF</color>
-    <color name="search_hint">#BDBDBD</color>
-    <color name="search_text">#333333</color>
-    <color name="search_icon">#757575</color>
-
-    <!-- Button Colors -->
-    <color name="button_green">#4CAF50</color>
-    <color name="button_green_pressed">#43A047</color>
-    <color name="button_green_disabled">#A5D6A7</color>
-
-    <color name="button_orange">#FF9800</color>
-    <color name="button_orange_pressed">#FB8C00</color>
-
-    <color name="button_red">#F44336</color>
-    <color name="button_red_pressed">#E53935</color>
-
-    <color name="button_blue">#2196F3</color>
-    <color name="button_blue_pressed">#1E88E5</color>
-
-    <!-- Progress Bar Colors -->
-    <color name="progress_bar">#4CAF50</color>
-    <color name="progress_background">#E0E0E0</color>
-
-    <color name="moisture_dry">#FF4444</color>
-    <color name="moisture_moderate">#FFBB33</color>
-    <color name="moisture_good">#99CC00</color>
-    <color name="bluetooth_blue">#4CAF50</color>
-
+    <!-- ── MATERIAL COMPAT ALIASES ── -->
+    <color name="purple_200">#C8EAD3</color>
+    <color name="purple_500">#1A6B3A</color>
+    <color name="purple_700">#0D3D21</color>
+    <color name="teal_200">#88D4AB</color>
+    <color name="teal_700">#2E8B57</color>
+    <color name="gray">@color/gray_medium</color>
 </resources>

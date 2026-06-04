@@ -113,7 +113,11 @@
                 android:textColor="#4CAF50"
                 android:textSize="14sp"
                 android:layout_marginTop="8dp"
-                android:layout_gravity="end" />
+                android:layout_gravity="end"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp" />
 
             <Button
                 android:id="@+id/btnLogin"
@@ -202,6 +206,18 @@
 
         </LinearLayout>
 
+        <!-- Guest Mode Button -->
+        <Button
+            android:id="@+id/btnGuest"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Continue as Guest"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="#757575"
+            android:layout_marginBottom="16dp" />
+
         <!-- Sign Up Link -->
         <TextView
             android:id="@+id/tvSignupRedirect"
@@ -214,17 +230,8 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp" />
-      <!--  <Button
-            android:id="@+id/btnGoogle"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Sign in with Google"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:backgroundTint="#DB4437"
-            android:layout_marginTop="12dp" />
-         Progress Bar -->
+
+        <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"

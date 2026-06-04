@@ -5,61 +5,54 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
-            android:title="Home" />
+            android:title="@string/home" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
-            android:title="Profile" />
+            android:title="@string/profile" />
         <item
             android:id="@+id/nav_garden"
             android:icon="@drawable/ic_garden"
-            android:title="My Garden" />
-        <item
-            android:id="@+id/nav_favorites"
-            android:icon="@drawable/ic_favorite"
-            android:title="Favorites" />
+            android:title="@string/my_garden" />
         <item
             android:id="@+id/nav_community"
             android:icon="@drawable/ic_community"
-            android:title="Community" />
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings"
-            android:title="Settings" />
+            android:title="@string/community" />
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history"
-            android:title="History" />
-        <item
-            android:id="@+id/nav_reminders"
-            android:icon="@drawable/ic_reminder"
-            android:title="Watering Reminders" />
-        <item
-            android:id="@+id/nav_smart_watering"
-            android:icon="@drawable/ic_smart_watering"
-            android:title="🤖 Умный полив" />
+            android:title="@string/history" />
     </group>
+
+    <item android:title="@string/settings">
+        <menu>
+            <item
+                android:id="@+id/nav_lang_en"
+                android:icon="@drawable/ic_language"
+                android:title="@string/english" />
+            <item
+                android:id="@+id/nav_lang_ru"
+                android:icon="@drawable/ic_language"
+                android:title="@string/russian" />
+        </menu>
+    </item>
 
     <item android:title="More">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_share"
-                android:title="Share App" />
-            <item
                 android:id="@+id/nav_rate"
                 android:icon="@drawable/ic_star"
-                android:title="Rate Us" />
+                android:title="@string/rate_us" />
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_info"
-                android:title="About" />
+                android:title="@string/about" />
         </menu>
     </item>
 
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
-        android:title="Logout" />
+        android:title="@string/logout" />
 
 </menu>

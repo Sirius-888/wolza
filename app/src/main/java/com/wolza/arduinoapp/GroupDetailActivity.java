@@ -129,6 +129,29 @@ public class GroupDetailActivity extends AppCompatActivity {
                 holder.ivImage.setVisibility(View.GONE);
             }
 
+            // Load author's avatar
+            String avatarBase64 = post.getUserAvatar();
+            if (avatarBase64 != null && !avatarBase64.isEmpty()) {
+                try {
+                    byte[] bytes = android.util.Base64.decode(avatarBase64, android.util.Base64.DEFAULT);
+                    Glide.with(holder.itemView.getContext()).load(bytes)
+                            .placeholder(R.drawable.ic_profile).into(holder.ivAvatar);
+                } catch (Exception e) {
+                    holder.ivAvatar.setImageResource(R.drawable.ic_profile);
+                }
+            } else {
+                holder.ivAvatar.setImageResource(R.drawable.ic_profile);
+            }
+
+            // Click listener to view author profile
+            View.OnClickListener openAuthorProfile = v -> {
+                Intent intent = new Intent(GroupDetailActivity.this, ProfileActivity.class);
+                intent.putExtra("userId", post.getUserId());
+                startActivity(intent);
+            };
+            holder.ivAvatar.setOnClickListener(openAuthorProfile);
+            holder.tvUser.setOnClickListener(openAuthorProfile);
+
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(GroupDetailActivity.this, PostDetailActivity.class);
                 intent.putExtra("post", post);
@@ -141,7 +164,7 @@ public class GroupDetailActivity extends AppCompatActivity {
 
         class PostViewHolder extends RecyclerView.ViewHolder {
             TextView tvTitle, tvUser, tvTime, tvContent, tvCommentCount;
-            ImageView ivImage;
+            ImageView ivImage, ivAvatar;
             public PostViewHolder(View v) {
                 super(v);
                 tvTitle = v.findViewById(R.id.tvPostTitle);
@@ -150,6 +173,7 @@ public class GroupDetailActivity extends AppCompatActivity {
                 tvContent = v.findViewById(R.id.tvPostContent);
                 tvCommentCount = v.findViewById(R.id.tvCommentCount);
                 ivImage = v.findViewById(R.id.ivPostImage);
+                ivAvatar = v.findViewById(R.id.ivUserAvatar);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.wolza.arduinoapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -35,12 +36,18 @@ public class AddItemActivity extends AppCompatActivity {
     private ImageView btnBack;
 
     private String base64Image = "";
+    private String itemCategory = "Plants"; // Default
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
     private static final int PICK_IMAGE_REQUEST = 1;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +58,19 @@ public class AddItemActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        // Get category from Intent
+        if (getIntent().hasExtra("category")) {
+            itemCategory = getIntent().getStringExtra("category");
+        }
+
         initViews();
         setupToolbar();
         setupClickListeners();
+
+        // Hide AI identify for non-plant items
+        if (!itemCategory.equalsIgnoreCase("Plants")) {
+            btnAutoIdentify.setVisibility(View.GONE);
+        }
     }
 
     private void initViews() {
@@ -72,7 +89,9 @@ public class AddItemActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Add New Item");
+            String title = "Add " + itemCategory;
+            if (itemCategory.equals("Wolza")) title = "Add Wolza Product";
+            getSupportActionBar().setTitle(title);
         }
         btnBack.setOnClickListener(v -> finish());
     }
@@ -94,7 +113,6 @@ public class AddItemActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-            // Use ImageUtils to resize the image to 600px max (perfect for market thumbnails)
             Bitmap resizedBitmap = ImageUtils.handleImageUri(this, uri, 600);
             if (resizedBitmap != null) {
                 imgItem.setImageBitmap(resizedBitmap);
@@ -175,8 +193,9 @@ public class AddItemActivity extends AppCompatActivity {
         item.put("price", price);
         item.put("description", description);
         item.put("imageUrl", base64Image);
+        item.put("category", itemCategory);
         item.put("sellerId", currentUser.getUid());
-        item.put("sellerName", currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User");
+        item.put("sellerName", itemCategory.equals("Wolza") ? "Official Wolza Shop" : (currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User"));
         item.put("timestamp", System.currentTimeMillis());
 
         db.collection("market_items").add(item)

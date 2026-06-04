@@ -43,7 +43,36 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <!-- Toggle Button -->
+        <!-- Market Modes TabLayout -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabIndicatorColor="#2196F3"
+            app:tabSelectedTextColor="#2196F3"
+            app:tabTextColor="#757575">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Plants" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tools" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wolza Shop" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <!-- Toggle Button for My Listings -->
         <TextView
             android:id="@+id/tvMyListings"
             android:layout_width="match_parent"

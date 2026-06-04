@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme -->
+
+    <!-- ═══════════════════════════════════════════════
+         WOLZA PLANT APP — PREMIUM THEME
+    ═══════════════════════════════════════════════ -->
     <style name="Theme.ArduinoApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">#00979D</item>  <!-- Arduino teal color -->
-        <item name="colorPrimaryVariant">#007A7E</item>
+        <!-- Primary color — Deep Jungle Green -->
+        <item name="colorPrimary">#1A6B3A</item>
+        <item name="colorPrimaryVariant">#0D3D21</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">#FFA500</item>  <!-- Orange accent -->
-        <item name="colorSecondaryVariant">#FF8C00</item>
+        <!-- Secondary color — Warm Amber -->
+        <item name="colorSecondary">#F4A61D</item>
+        <item name="colorSecondaryVariant">#D4891A</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Surface & Background -->
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#374140</item>
+        <item name="android:colorBackground">@color/brand_background</item>
+
+        <!-- Status bar — Deep Jungle -->
+        <item name="android:statusBarColor" tools:targetApi="l">#0D3D21</item>
 
         <!-- Window background -->
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@color/brand_background</item>
+
+        <!-- Ripple -->
+        <item name="colorControlHighlight">#20F4A61D</item>
     </style>
+
 </resources>

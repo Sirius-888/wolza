@@ -14,7 +14,6 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,7 +40,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -102,7 +100,7 @@ public class MyGardenActivity extends AppCompatActivity {
             String plantName = intent.getStringExtra("open_plant_name");
             for (int i = 0; i < gardenPlants.size(); i++) {
                 if (gardenPlants.get(i).getFlower().getName().equalsIgnoreCase(plantName)) {
-                    showWaterDialog(i);
+                    openPlantDetail(i);
                     break;
                 }
             }
@@ -203,12 +201,6 @@ public class MyGardenActivity extends AppCompatActivity {
         } catch (Exception ignored) {}
     }
 
-    private void openDoctorImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_DOCTOR_PICKER);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -260,7 +252,7 @@ public class MyGardenActivity extends AppCompatActivity {
         adapter = new GardenAdapter(this, gardenPlants);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(this::showWaterDialog);
+        adapter.setOnItemClickListener(this::openPlantDetail);
         adapter.setOnDeleteClickListener(pos -> {
             gardenPlants.remove(pos);
             saveGardenPlants();
@@ -270,69 +262,10 @@ public class MyGardenActivity extends AppCompatActivity {
         });
     }
 
-    private void showWaterDialog(int position) {
-        GardenPlant plant = gardenPlants.get(position);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_water_plant, null);
-        ImageView img = dialogView.findViewById(R.id.imgPlant);
-        TextView name = dialogView.findViewById(R.id.tvPlantName);
-        TextView planText = dialogView.findViewById(R.id.tvWateringInstructions);
-        Button btnWater = dialogView.findViewById(R.id.btnWater);
-        Button btnCheckHealth = dialogView.findViewById(R.id.btnCheckHealth);
-
-        name.setText(plant.getFlower().getName());
-        planText.setText("Weekly Plan: " + plant.getWeeklyFrequency() + " sessions");
-
-        // Watering Graphic
-        View[] bars = {
-                dialogView.findViewById(R.id.bar0), dialogView.findViewById(R.id.bar1),
-                dialogView.findViewById(R.id.bar2), dialogView.findViewById(R.id.bar3),
-                dialogView.findViewById(R.id.bar4), dialogView.findViewById(R.id.bar5),
-                dialogView.findViewById(R.id.bar6)
-        };
-        boolean[] plan = plant.getWeeklyPlan();
-        if (plan != null) {
-            for (int i = 0; i < 7; i++) {
-                bars[i].setBackgroundColor(plan[i] ? 0xFF2196F3 : 0xFFE0E0E0);
-            }
-        }
-
-        String finalImage = plant.getCustomImageBase64();
-        if (finalImage == null && plant.getFlower().getImageUrl() != null) {
-            finalImage = plant.getFlower().getImageUrl();
-        }
-
-        if (finalImage != null) {
-            if (finalImage.startsWith("http")) {
-                Glide.with(this).load(finalImage).placeholder(R.drawable.ic_flower).into(img);
-            } else {
-                byte[] decoded = Base64.decode(finalImage, Base64.DEFAULT);
-                Glide.with(this).load(decoded).centerCrop().into(img);
-            }
-        }
-
-        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this).setView(dialogView).create();
-        
-        btnWater.setOnClickListener(v -> {
-            plant.water();
-            saveGardenPlants();
-            adapter.notifyItemChanged(position);
-            updateGardenStats();
-            dialog.dismiss();
-        });
-
-        String finalImageForDoctor = finalImage;
-        btnCheckHealth.setOnClickListener(v -> {
-            dialog.dismiss();
-            if (finalImageForDoctor != null) {
-                Intent intent = new Intent(this, DoctorActivity.class);
-                intent.putExtra("image", finalImageForDoctor);
-                startActivity(intent);
-            } else {
-                openDoctorImagePicker();
-            }
-        });
-
-        dialog.show();
+    private void openPlantDetail(int position) {
+        Intent intent = new Intent(this, GardenPlantDetailActivity.class);
+        intent.putExtra("plant_position", position);
+        startActivity(intent);
     }
 
     private void updateEmptyState() {

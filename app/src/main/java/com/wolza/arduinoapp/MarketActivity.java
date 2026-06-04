@@ -1,27 +1,31 @@
 package com.wolza.arduinoapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +38,24 @@ public class MarketActivity extends AppCompatActivity {
     private TextView tvEmpty, tvMyListings;
     private ImageView btnBack;
     private FloatingActionButton fabAddItem;
+    private TabLayout tabLayout;
     private MarketAdapter adapter;
-    private List<MarketItem> marketItems;
-    private List<MarketItem> myItems;
+    
+    private List<MarketItem> allItems = new ArrayList<>();
+    private List<MarketItem> filteredItems = new ArrayList<>();
+    private List<MarketItem> myItems = new ArrayList<>();
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
     private boolean showMyListings = false;
+    private int currentMode = 0; // 0: Plants, 1: Tools, 2: Wolza Shop
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +69,13 @@ public class MarketActivity extends AppCompatActivity {
         initViews();
         setupToolbar();
         setupRecyclerView();
+        setupTabs();
         setupFab();
         loadItems();
 
         tvMyListings.setOnClickListener(v -> {
             showMyListings = !showMyListings;
-            if (showMyListings) {
-                tvMyListings.setText("📦 My Listings");
-                tvMyListings.setTextColor(getResources().getColor(android.R.color.holo_orange_dark, getTheme()));
-                adapter.updateList(myItems);
-                updateEmptyState(myItems);
-            } else {
-                tvMyListings.setText("📦 All Listings");
-                tvMyListings.setTextColor(getResources().getColor(android.R.color.holo_green_dark, getTheme()));
-                adapter.updateList(marketItems);
-                updateEmptyState(marketItems);
-            }
+            updateListDisplay();
         });
     }
 
@@ -81,9 +85,7 @@ public class MarketActivity extends AppCompatActivity {
         tvMyListings = findViewById(R.id.tvMyListings);
         btnBack = findViewById(R.id.btnBack);
         fabAddItem = findViewById(R.id.fabAddItem);
-
-        marketItems = new ArrayList<>();
-        myItems = new ArrayList<>();
+        tabLayout = findViewById(R.id.tabLayout);
     }
 
     private void setupToolbar() {
@@ -96,42 +98,113 @@ public class MarketActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        adapter = new MarketAdapter(this, marketItems);
+        adapter = new MarketAdapter(this, filteredItems);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(position -> {
-            MarketItem item = showMyListings ? myItems.get(position) : marketItems.get(position);
+            MarketItem item = filteredItems.get(position);
             showItemDialog(item);
+        });
+    }
+
+    private void setupTabs() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                currentMode = tab.getPosition();
+                updateListDisplay();
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
     }
 
     private void setupFab() {
         fabAddItem.setOnClickListener(v -> {
-            Intent intent = new Intent(MarketActivity.this, AddItemActivity.class);
-            startActivityForResult(intent, 100);
+            if (currentMode == 2) {
+                checkAdminAccess();
+            } else {
+                Intent intent = new Intent(MarketActivity.this, AddItemActivity.class);
+                intent.putExtra("category", currentMode == 0 ? "Plants" : "Tools");
+                startActivityForResult(intent, 100);
+            }
         });
+    }
+
+    private void checkAdminAccess() {
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setHint("Enter Admin Code");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Admin Access")
+                .setMessage("Enter the code to edit Wolza Shop")
+                .setView(input)
+                .setPositiveButton("Verify", (dialog, which) -> {
+                    String code = input.getText().toString();
+                    if (code.equals("chgitem777")) {
+                        Intent intent = new Intent(MarketActivity.this, AddItemActivity.class);
+                        intent.putExtra("category", "Wolza");
+                        startActivityForResult(intent, 100);
+                    } else {
+                        Toast.makeText(this, "Incorrect Code!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void loadItems() {
         db.collection("market_items")
-                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    marketItems.clear();
+                    allItems.clear();
                     myItems.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         MarketItem item = document.toObject(MarketItem.class);
                         item.setId(document.getId());
-                        marketItems.add(item);
+                        allItems.add(item);
                         if (currentUser != null && item.getSellerId() != null && item.getSellerId().equals(currentUser.getUid())) {
                             myItems.add(item);
                         }
                     }
-                    adapter.updateList(marketItems);
-                    updateEmptyState(marketItems);
+                    updateListDisplay();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Error loading items", Toast.LENGTH_SHORT).show());
+    }
+
+    private void updateListDisplay() {
+        filteredItems.clear();
+        String targetCategory;
+        switch (currentMode) {
+            case 1: targetCategory = "Tools"; break;
+            case 2: targetCategory = "Wolza"; break;
+            default: targetCategory = "Plants"; break;
+        }
+
+        List<MarketItem> sourceList = showMyListings ? myItems : allItems;
+        
+        for (MarketItem item : sourceList) {
+            String itemCat = item.getCategory() != null ? item.getCategory() : "Plants";
+            if (itemCat.equalsIgnoreCase(targetCategory)) {
+                filteredItems.add(item);
+            }
+        }
+
+        if (showMyListings) {
+            tvMyListings.setText("📦 Showing My Listings");
+            tvMyListings.setTextColor(getResources().getColor(android.R.color.holo_orange_dark, getTheme()));
+        } else {
+            tvMyListings.setText("📦 Showing All Listings");
+            tvMyListings.setTextColor(getResources().getColor(android.R.color.holo_green_dark, getTheme()));
+        }
+
+        adapter.updateList(filteredItems);
+        updateEmptyState(filteredItems);
     }
 
     private void showItemDialog(MarketItem item) {
@@ -165,13 +238,26 @@ public class MarketActivity extends AppCompatActivity {
             }
         }
 
-        // Load Seller Profile Image
-        if (item.getSellerId() != null) {
+        if (item.getCategory() != null && item.getCategory().equals("Wolza")) {
+            imgSeller.setImageResource(R.drawable.ic_launcher_foreground); // Wolza logo placeholder
+            tvSeller.setText("Official Wolza Shop");
+            btnCall.setVisibility(View.GONE);
+            btnMessage.setOnClickListener(v -> Toast.makeText(this, "Contacting Wolza Support...", Toast.LENGTH_SHORT).show());
+        } else if (item.getSellerId() != null) {
+            // Clicking seller image or name opens their profile
+            View.OnClickListener openProfileListener = v -> {
+                Intent profileIntent = new Intent(MarketActivity.this, ProfileActivity.class);
+                profileIntent.putExtra("userId", item.getSellerId());
+                startActivity(profileIntent);
+            };
+            imgSeller.setOnClickListener(openProfileListener);
+            tvSeller.setOnClickListener(openProfileListener);
+
             db.collection("users").document(item.getSellerId()).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             String avatarBase64 = documentSnapshot.getString("avatar");
-                            String phone = documentSnapshot.getString("phone"); // We'll try to get phone
+                            String phone = documentSnapshot.getString("phone");
                             if (avatarBase64 != null && !avatarBase64.isEmpty()) {
                                 try {
                                     byte[] bytes = Base64.decode(avatarBase64, Base64.DEFAULT);
@@ -180,21 +266,31 @@ public class MarketActivity extends AppCompatActivity {
                                     imgSeller.setImageResource(R.drawable.ic_community);
                                 }
                             }
-                            
-                            // Setup Call Button
                             btnCall.setOnClickListener(v -> {
-                                String number = (phone != null && !phone.isEmpty()) ? phone : "5550199"; // Default or placeholder
+                                String number = (phone != null && !phone.isEmpty()) ? phone : "5550199";
                                 Intent intent = new Intent(Intent.ACTION_DIAL);
                                 intent.setData(Uri.parse("tel:" + number));
                                 startActivity(intent);
                             });
                         }
                     });
+
+            btnMessage.setOnClickListener(v -> {
+                if (currentUser == null) {
+                    Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (item.getSellerId().equals(currentUser.getUid())) {
+                    Toast.makeText(this, "This is your own listing", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent chatIntent = new Intent(MarketActivity.this, DirectChatActivity.class);
+                chatIntent.putExtra("partnerId", item.getSellerId());
+                startActivity(chatIntent);
+            });
         }
 
-        btnMessage.setOnClickListener(v -> Toast.makeText(this, "Messaging " + item.getSellerName() + "...", Toast.LENGTH_SHORT).show());
-
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setView(dialogView)
                 .setPositiveButton("Close", null)
                 .show();
@@ -217,7 +313,7 @@ public class MarketActivity extends AppCompatActivity {
     }
 
     public static class MarketItem {
-        private String id, name, description, price, imageUrl, sellerId, sellerName;
+        private String id, name, description, price, imageUrl, sellerId, sellerName, category;
         private long timestamp;
         public MarketItem() {}
         public String getId() { return id; }
@@ -236,5 +332,7 @@ public class MarketActivity extends AppCompatActivity {
         public void setSellerName(String sellerName) { this.sellerName = sellerName; }
         public long getTimestamp() { return timestamp; }
         public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+        public String getCategory() { return category; }
+        public void setCategory(String category) { this.category = category; }
     }
 }

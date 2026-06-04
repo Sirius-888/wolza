@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -27,6 +26,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import android.widget.RatingBar;
+import android.widget.EditText;
+import android.widget.Button;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -40,7 +50,7 @@ import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -59,8 +69,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // MQTT variables
     private MqttClient mqttClient;
-    private final String MQTT_TOPIC = "home/plants/moisture";
     private final String BROKER_URL = "tcp://broker.hivemq.com:1883";
+    private final String[] MQTT_TOPICS = {
+        "home/plants/moisture",
+        "home/plants/temperature",
+        "home/plants/humidity"
+    };
+
+    // Telemetry fields for main dashboard
+    private String lastMoisture = "--";
+    private String lastTemperature = "--";
+    private String lastHumidity = "--";
+
+    private void updateMainStatusDisplay(String source) {
+        if (tvMoistureDisplay == null) return;
+        StringBuilder sb = new StringBuilder();
+        sb.append(source).append(": 🌱 ").append(lastMoisture);
+        if (!lastMoisture.equals("--")) {
+            sb.append("%");
+        }
+        sb.append(" | 🌡️ ").append(lastTemperature);
+        if (!lastTemperature.equals("--")) {
+            sb.append("°C");
+        }
+        sb.append(" | 💧 ").append(lastHumidity);
+        if (!lastHumidity.equals("--")) {
+            sb.append("%");
+        }
+        tvMoistureDisplay.setText(sb.toString());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,21 +146,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void messageArrived(String topic, MqttMessage message) {
-                        final String payload = new String(message.getPayload());
+                        final String payload = new String(message.getPayload()).trim();
                         runOnUiThread(() -> {
-                            try {
-                                int moistureValue = Integer.parseInt(payload.trim());
-                                MoistureData moistureData = new MoistureData(moistureValue, 0);
-                                if (tvMoistureDisplay != null) {
-                                    tvMoistureDisplay.setText("MQTT: " + moistureValue + "% (" + moistureData.getMoistureStatus() + ")");
-                                }
-                                if (pbMoistureMain != null) {
-                                    pbMoistureMain.setProgress(moistureValue);
-                                    pbMoistureMain.setProgressTintList(android.content.res.ColorStateList.valueOf(moistureData.getStatusColor()));
-                                }
-                            } catch (NumberFormatException e) {
-                                if (tvMoistureDisplay != null) tvMoistureDisplay.setText("Soil: " + payload);
+                            if (topic.equals("home/plants/moisture")) {
+                                lastMoisture = payload;
+                                try {
+                                    int moistureValue = Integer.parseInt(payload);
+                                    MoistureData moistureData = new MoistureData(moistureValue, 0);
+                                    if (pbMoistureMain != null) {
+                                        pbMoistureMain.setProgress(moistureValue);
+                                        pbMoistureMain.setProgressTintList(android.content.res.ColorStateList.valueOf(moistureData.getStatusColor()));
+                                    }
+                                } catch (NumberFormatException ignored) {}
+                            } else if (topic.equals("home/plants/temperature")) {
+                                lastTemperature = payload;
+                            } else if (topic.equals("home/plants/humidity")) {
+                                lastHumidity = payload;
                             }
+                            updateMainStatusDisplay("MQTT");
                         });
                     }
 
@@ -138,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 opts.setKeepAliveInterval(30);
 
                 client.connect(opts);
-                client.subscribe(MQTT_TOPIC);
+                client.subscribe(MQTT_TOPICS);
                 mqttClient = client;
 
                 runOnUiThread(() -> {
@@ -184,11 +224,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (cleanData.contains("%")) moistureValue = Integer.parseInt(cleanData.replace("%", ""));
                             else moistureValue = Integer.parseInt(cleanData);
 
-                            MoistureData moistureData = new MoistureData(moistureValue, 0);
-                            if (tvMoistureDisplay != null) {
-                                tvMoistureDisplay.setText("Bluetooth: " + moistureValue + "% (" + moistureData.getMoistureStatus() + ")");
-                            }
+                            lastMoisture = String.valueOf(moistureValue);
+                            updateMainStatusDisplay("Bluetooth");
+
                             if (pbMoistureMain != null) {
+                                MoistureData moistureData = new MoistureData(moistureValue, 0);
                                 pbMoistureMain.setProgress(moistureValue);
                                 pbMoistureMain.setProgressTintList(android.content.res.ColorStateList.valueOf(moistureData.getStatusColor()));
                             }
@@ -237,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Garden Assistant");
+            getSupportActionBar().setTitle(R.string.app_name);
         }
     }
 
@@ -253,26 +293,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupFeatureButtons() {
         cardSearch.setOnClickListener(v -> showSearchOptions());
-        cardCare.setOnClickListener(v -> showCareOptions());
+        cardCare.setOnClickListener(v -> startActivity(new Intent(this, AutoCareActivity.class)));
         cardDoctor.setOnClickListener(v -> openImagePicker());
         cardMarket.setOnClickListener(v -> startActivity(new Intent(this, MarketActivity.class)));
         cardCommunity.setOnClickListener(v -> startActivity(new Intent(this, CommunityActivity.class)));
-        cardMyPlant.setOnClickListener(v -> startActivity(new Intent(this, BluetoothConnectionActivity.class)));
+        cardMyPlant.setOnClickListener(v -> startActivity(new Intent(this, MoistureDetailActivity.class)));
         cardWifiData.setOnClickListener(v -> {
             Toast.makeText(this, "Refreshing WiFi data...", Toast.LENGTH_SHORT).show();
             startMQTT();
         });
         cardReminders.setOnClickListener(v -> startActivity(new Intent(this, MyGardenActivity.class)));
-    }
-
-    private void showCareOptions() {
-        String[] options = {"📋 Smart Tracker", "📅 Vacation Mode"};
-        new AlertDialog.Builder(this)
-                .setTitle("Plant Care")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) startActivity(new Intent(this, MyGardenActivity.class));
-                    else startActivity(new Intent(this, AutoCareActivity.class));
-                }).show();
     }
 
     private void openImagePicker() {
@@ -298,9 +328,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void showSearchOptions() {
-        String[] options = {"📖 Manual Search", "📸 Auto Identify"};
+        String[] options = {getString(R.string.manual_search_option), getString(R.string.auto_identify_option)};
         new AlertDialog.Builder(this)
-                .setTitle("Search Flowers")
+                .setTitle(R.string.search_flowers_title)
                 .setItems(options, (dialog, which) -> {
                     if (which == 0) startActivity(new Intent(this, FlowerListActivity.class));
                     else startActivity(new Intent(this, AutoSearchActivity.class));
@@ -309,8 +339,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void loadUserData() {
         if (currentUser != null) {
-            if (tvWelcomeMessage != null) tvWelcomeMessage.setText("Welcome, " + (currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User") + "!");
+            if (tvWelcomeMessage != null) {
+                String name = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User";
+                tvWelcomeMessage.setText(getString(R.string.welcome_message, name));
+            }
             if (tvUserEmail != null) tvUserEmail.setText(currentUser.getEmail());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Always highlight Home when this screen is visible
+        if (navigationView != null) {
+            navigationView.setCheckedItem(R.id.nav_home);
         }
     }
 
@@ -318,14 +360,138 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_profile) startActivity(new Intent(this, ProfileActivity.class));
-        else if (id == R.id.nav_garden || id == R.id.nav_reminders) startActivity(new Intent(this, MyGardenActivity.class));
+        else if (id == R.id.nav_garden) startActivity(new Intent(this, MyGardenActivity.class));
         else if (id == R.id.nav_history) startActivity(new Intent(this, HistoryActivity.class));
         else if (id == R.id.nav_community) startActivity(new Intent(this, CommunityActivity.class));
-        else if (id == R.id.nav_smart_watering) startActivity(new Intent(this, AutoCareActivity.class));
         else if (id == R.id.nav_logout) logout();
+        else if (id == R.id.nav_about) startActivity(new Intent(this, AboutActivity.class));
+        else if (id == R.id.nav_rate) showRateUsDialog();
+        else if (id == R.id.nav_lang_en) {
+            updateLanguage("en");
+        } else if (id == R.id.nav_lang_ru) {
+            updateLanguage("ru");
+        }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showRateUsDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_rate_us, null);
+        RatingBar ratingBar = dialogView.findViewById(R.id.ratingBar);
+        EditText etSuggestion = dialogView.findViewById(R.id.etSuggestion);
+        Button btnSubmit = dialogView.findViewById(R.id.btnSubmit);
+        Button btnViewAll = dialogView.findViewById(R.id.btnViewAll);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        btnSubmit.setOnClickListener(v -> {
+            String suggestion = etSuggestion.getText().toString().trim();
+            float rating = ratingBar.getRating();
+
+            if (suggestion.isEmpty()) {
+                Toast.makeText(this, "Please enter your suggestion", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String userName = "Guest User";
+            if (currentUser != null) {
+                if (currentUser.getDisplayName() != null && !currentUser.getDisplayName().isEmpty()) {
+                    userName = currentUser.getDisplayName();
+                } else if (currentUser.getEmail() != null && !currentUser.getEmail().isEmpty()) {
+                    userName = currentUser.getEmail().split("@")[0];
+                }
+            }
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Map<String, Object> feedback = new HashMap<>();
+            feedback.put("userName", userName);
+            feedback.put("userId", currentUser != null ? currentUser.getUid() : "anonymous");
+            feedback.put("rating", rating);
+            feedback.put("suggestion", suggestion);
+            feedback.put("timestamp", System.currentTimeMillis());
+
+            btnSubmit.setEnabled(false);
+            btnSubmit.setText("Submitting...");
+
+            db.collection("feedbacks")
+                    .add(feedback)
+                    .addOnSuccessListener(documentReference -> {
+                        Toast.makeText(this, "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    })
+                    .addOnFailureListener(e -> {
+                        btnSubmit.setEnabled(true);
+                        btnSubmit.setText("Submit");
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        });
+
+        btnViewAll.setOnClickListener(v -> {
+            dialog.dismiss();
+            showAllSuggestionsDialog();
+        });
+
+        dialog.show();
+    }
+
+    private void showAllSuggestionsDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_view_all_suggestions, null);
+        RecyclerView rvSuggestions = dialogView.findViewById(R.id.rvSuggestions);
+        ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
+        TextView tvNoSuggestions = dialogView.findViewById(R.id.tvNoSuggestions);
+        Button btnClose = dialogView.findViewById(R.id.btnClose);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        progressBar.setVisibility(View.VISIBLE);
+        rvSuggestions.setVisibility(View.GONE);
+        tvNoSuggestions.setVisibility(View.GONE);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("feedbacks")
+                .get()
+                .addOnCompleteListener(task -> {
+                    progressBar.setVisibility(View.GONE);
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<SuggestionItem> list = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            SuggestionItem item = doc.toObject(SuggestionItem.class);
+                            list.add(item);
+                        }
+
+                        // Sort locally by timestamp descending
+                        list.sort((a, b) -> Long.compare(b.getTimestamp(), a.getTimestamp()));
+
+                        if (list.isEmpty()) {
+                            tvNoSuggestions.setVisibility(View.VISIBLE);
+                        } else {
+                            rvSuggestions.setVisibility(View.VISIBLE);
+                            SuggestionsAdapter adapter = new SuggestionsAdapter(list);
+                            rvSuggestions.setAdapter(adapter);
+                            rvSuggestions.setLayoutManager(new LinearLayoutManager(this));
+                        }
+                    } else {
+                        String errMsg = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                        Toast.makeText(this, "Failed to load suggestions: " + errMsg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        dialog.show();
+    }
+
+    private void updateLanguage(String lang) {
+        LocaleHelper.setLocale(this, lang);
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     private void logout() {

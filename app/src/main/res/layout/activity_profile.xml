@@ -237,6 +237,17 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <!-- Reels Button -->
+                <Button
+                    android:id="@+id/btnReels"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/reels"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    android:backgroundTint="#E91E63" />
+
                 <!-- Change Password Button -->
                 <Button
                     android:id="@+id/tvChangePassword"

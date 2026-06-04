@@ -75,6 +75,7 @@
         <activity android:name=".FlowerListActivity" android:exported="false" />
         <activity android:name=".FlowerDetailActivity" android:exported="false" />
         <activity android:name=".MyGardenActivity" android:exported="false" />
+        <activity android:name=".GardenPlantDetailActivity" android:exported="false" />
         <activity android:name=".AutoSearchActivity" android:exported="false" />
         <activity android:name=".IdentificationResultActivity" android:exported="false" />
         <activity android:name=".DoctorActivity" android:exported="false" />
@@ -84,15 +85,18 @@
         <activity android:name=".MarketActivity" android:exported="false" />
         <activity android:name=".AddItemActivity" android:exported="false" />
         <activity android:name=".HistoryActivity" android:exported="false" />
+        <activity android:name=".AutoCareActivity" android:exported="false" />
+        <activity android:name=".MoistureDetailActivity" android:exported="false" />
+        <activity android:name=".ReelsActivity" android:exported="false" />
+        <activity android:name=".PlantChatActivity" android:exported="false" android:label="Plant Assistant" />
+        <activity android:name=".AboutActivity" android:exported="false" />
         
         <!-- Community Activities -->
-        <activity android:name=".CommunityActivity" android:exported="false" android:parentActivityName=".MainActivity" android:label="Community Groups" />
+        <activity android:name=".CommunityActivity" android:exported="false" android:parentActivityName=".MainActivity" android:label="Community" />
         <activity android:name=".GroupDetailActivity" android:exported="false" android:label="Group Feed" />
         <activity android:name=".AddPostActivity" android:exported="false" android:label="New Post" />
         <activity android:name=".PostDetailActivity" android:exported="false" android:label="Comments" />
-
-
+        <activity android:name=".DirectChatActivity" android:exported="false" android:label="Chat" />
 
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

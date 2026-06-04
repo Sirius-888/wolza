@@ -21,25 +21,28 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputLayout tilEmail, tilPassword;
     private EditText etEmail, etPassword, etPhone;
-    private Button btnLogin, btnPhone;
+    private Button btnLogin, btnPhone, btnGuest;
     private TextView tvSignupRedirect, tvForgotPassword, tvPhoneTab, tvEmailTab;
     private ProgressBar progressBar;
     private LinearLayout emailLoginLayout, phoneLoginLayout;
     private View loadingBackground;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     private String verificationId;
 
@@ -48,16 +51,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-        // Initialize views
         initViews();
-
-        // Set click listeners
         setupClickListeners();
 
-        // Check if already logged in
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
@@ -70,70 +69,168 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etPhone = findViewById(R.id.etPhone);
-
         btnLogin = findViewById(R.id.btnLogin);
         btnPhone = findViewById(R.id.btnPhone);
-
+        btnGuest = findViewById(R.id.btnGuest);
         tvSignupRedirect = findViewById(R.id.tvSignupRedirect);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvPhoneTab = findViewById(R.id.tvPhoneTab);
         tvEmailTab = findViewById(R.id.tvEmailTab);
-
         progressBar = findViewById(R.id.progressBar);
         loadingBackground = findViewById(R.id.loadingBackground);
         emailLoginLayout = findViewById(R.id.emailLoginLayout);
         phoneLoginLayout = findViewById(R.id.phoneLoginLayout);
 
-        // Start with email tab
         showEmailTab();
+
+        etEmail.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { tilEmail.setError(null); }
+            @Override public void afterTextChanged(android.text.Editable s) {}
+        });
+        etPassword.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { tilPassword.setError(null); }
+            @Override public void afterTextChanged(android.text.Editable s) {}
+        });
     }
 
     private void setupClickListeners() {
-        // Email/Password Login
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginWithEmail();
-            }
+        btnLogin.setOnClickListener(v -> loginWithEmail());
+        btnPhone.setOnClickListener(v -> sendPhoneVerification());
+        btnGuest.setOnClickListener(v -> loginAsGuest());
+        tvEmailTab.setOnClickListener(v -> showEmailTab());
+        tvPhoneTab.setOnClickListener(v -> showPhoneTab());
+        tvSignupRedirect.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
+        tvForgotPassword.setOnClickListener(v -> resetPassword());
+    }
 
-        // Phone Sign-In
-        btnPhone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendPhoneVerification();
-            }
-        });
+    private void loginAsGuest() {
+        showLoading(true);
+        // Anonymous Auth: each guest gets their OWN unique Firebase UID
+        // → unlimited simultaneous guests, no data conflicts
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, task -> {
+                    showLoading(false);
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        // Store guest flag in Firestore so the app knows it's a guest
+                        if (user != null) {
+                            Map<String, Object> guestData = new HashMap<>();
+                            guestData.put("name", "Guest");
+                            guestData.put("email", "innovationcampus26@gmail.com");
+                            guestData.put("isGuest", true);
+                            guestData.put("createdAt", System.currentTimeMillis());
+                            db.collection("users").document(user.getUid())
+                                    .set(guestData)
+                                    .addOnCompleteListener(t -> handleGuestSuccess());
+                        } else {
+                            handleGuestSuccess();
+                        }
+                    } else {
+                        // Anonymous Auth not enabled — show instructions dialog
+                        String msg = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                        new androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle("⚙️ One-Time Setup Required")
+                                .setMessage(
+                                        "To allow Guest Mode, please enable Anonymous Auth in Firebase:\n\n" +
+                                        "1. Go to console.firebase.google.com\n" +
+                                        "2. Select your project\n" +
+                                        "3. Authentication → Sign-in method\n" +
+                                        "4. Enable 'Anonymous'\n" +
+                                        "5. Save and try again\n\n" +
+                                        "(Error: " + msg + ")")
+                                .setPositiveButton("OK", null)
+                                .show();
+                    }
+                });
+    }
 
-        // Tabs
-        tvEmailTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEmailTab();
-            }
-        });
+    private void handleGuestSuccess() {
+        Toast.makeText(LoginActivity.this, "Welcome, Guest! 👋", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        finish();
+    }
 
-        tvPhoneTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPhoneTab();
-            }
-        });
 
-        tvSignupRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
-        });
+    private void loginWithEmail() {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+        if (TextUtils.isEmpty(email)) { tilEmail.setError("Email required"); return; }
+        if (TextUtils.isEmpty(password)) { tilPassword.setError("Password required"); return; }
+        showLoading(true);
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    showLoading(false);
+                    if (task.isSuccessful()) {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Login Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
 
-        tvForgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetPassword();
+    private void sendPhoneVerification() {
+        String phone = etPhone.getText().toString().trim();
+        if (TextUtils.isEmpty(phone)) { Toast.makeText(this, "Enter phone number", Toast.LENGTH_SHORT).show(); return; }
+        if (!phone.startsWith("+")) phone = phone.startsWith("0") ? "+374" + phone.substring(1) : "+374" + phone;
+        showLoading(true);
+        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
+                .setPhoneNumber(phone).setTimeout(60L, TimeUnit.SECONDS).setActivity(this)
+                .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                    @Override public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) { showLoading(false); signInWithPhoneCredential(credential); }
+                    @Override public void onVerificationFailed(@NonNull FirebaseException e) { showLoading(false); Toast.makeText(LoginActivity.this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show(); }
+                    @Override public void onCodeSent(@NonNull String vId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                        showLoading(false); LoginActivity.this.verificationId = vId; showOTPDialog();
+                    }
+                }).build();
+        PhoneAuthProvider.verifyPhoneNumber(options);
+    }
+
+    private void showOTPDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Code");
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        builder.setView(input);
+        builder.setPositiveButton("Verify", (dialog, which) -> {
+            String code = input.getText().toString().trim();
+            if (code.length() == 6) signInWithPhoneCredential(PhoneAuthProvider.getCredential(verificationId, code));
+        });
+        builder.setNegativeButton("Cancel", null).show();
+    }
+
+    private void signInWithPhoneCredential(PhoneAuthCredential credential) {
+        showLoading(true);
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            showLoading(false);
+            if (task.isSuccessful()) { startActivity(new Intent(LoginActivity.this, MainActivity.class)); finish(); }
+            else Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+        });
+    }
+
+    private void resetPassword() {
+        String currentEmail = etEmail.getText().toString().trim();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Reset Password");
+        final EditText input = new EditText(this);
+        input.setText(currentEmail);
+        builder.setView(input);
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String email = input.getText().toString().trim();
+            if (!TextUtils.isEmpty(email)) {
+                showLoading(true);
+                mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
+                    showLoading(false);
+                    Toast.makeText(LoginActivity.this, task.isSuccessful() ? "Email sent" : "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
         });
+        builder.setNegativeButton("Cancel", null).show();
     }
 
     private void showEmailTab() {
@@ -154,175 +251,11 @@ public class LoginActivity extends AppCompatActivity {
         phoneLoginLayout.setVisibility(View.VISIBLE);
     }
 
-    private void loginWithEmail() {
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email)) {
-            tilEmail.setError("Email required");
-            return;
-        }
-        if (TextUtils.isEmpty(password)) {
-            tilPassword.setError("Password required");
-            return;
-        }
-
-        showLoading(true);
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        showLoading(false);
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-    }
-
-    private void sendPhoneVerification() {
-        String phone = etPhone.getText().toString().trim();
-        if (TextUtils.isEmpty(phone)) {
-            Toast.makeText(this, "Enter phone number", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Format Armenian phone number
-        if (!phone.startsWith("+")) {
-            if (phone.startsWith("0")) {
-                phone = "+374" + phone.substring(1);
-            } else {
-                phone = "+374" + phone;
-            }
-        }
-
-        // Show loading
-        showLoading(true);
-        Toast.makeText(this, "Sending code to " + phone, Toast.LENGTH_LONG).show();
-
-        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
-                .setPhoneNumber(phone)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setActivity(this)
-                .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                    @Override
-                    public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
-                        // Auto-retrieval or instant verification
-                        showLoading(false);
-                        signInWithPhoneCredential(credential);
-                    }
-
-                    @Override
-                    public void onVerificationFailed(@NonNull FirebaseException e) {
-                        showLoading(false);
-                        String error = e.getMessage();
-                        Toast.makeText(LoginActivity.this,
-                                "Failed: " + error, Toast.LENGTH_LONG).show();
-
-                        // Suggest using test numbers
-                        if (error.contains("QUOTA_EXCEEDED")) {
-                            new AlertDialog.Builder(LoginActivity.this)
-                                    .setTitle("SMS Quota Exceeded")
-                                    .setMessage("Use test numbers in Firebase Console:\n+37477123456 (code: 123456)")
-                                    .setPositiveButton("OK", null)
-                                    .show();
-                        }
-                    }
-
-                    @Override
-                    public void onCodeSent(@NonNull String verificationId,
-                                           @NonNull PhoneAuthProvider.ForceResendingToken token) {
-                        showLoading(false);
-                        // Save verification ID
-                        LoginActivity.this.verificationId = verificationId;
-
-                        // Show OTP dialog
-                        showOTPDialog();
-
-                        Toast.makeText(LoginActivity.this,
-                                "Code sent!", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .build();
-
-        PhoneAuthProvider.verifyPhoneNumber(options);
-    }
-
-    private void showOTPDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter Code");
-        builder.setMessage("Enter 6-digit code sent to your phone");
-
-        final EditText input = new EditText(this);
-        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        input.setHint("123456");
-        builder.setView(input);
-
-        builder.setPositiveButton("Verify", (dialog, which) -> {
-            String code = input.getText().toString().trim();
-            if (code.length() == 6) {
-                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-                signInWithPhoneCredential(credential);
-            } else {
-                Toast.makeText(this, "Enter 6-digit code", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
-    }
-
-    private void signInWithPhoneCredential(PhoneAuthCredential credential) {
-        showLoading(true);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    showLoading(false);
-                    if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this,
-                                "Phone login successful!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this,
-                                "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    private void resetPassword() {
-        String email = etEmail.getText().toString().trim();
-        if (TextUtils.isEmpty(email)) {
-            tilEmail.setError("Enter your email");
-            return;
-        }
-
-        showLoading(true);
-        mAuth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(task -> {
-                    showLoading(false);
-                    if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this,
-                                "Password reset email sent to " + email, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(LoginActivity.this,
-                                "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
     private void showLoading(boolean show) {
-        if (progressBar != null) {
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-        if (loadingBackground != null) {
-            loadingBackground.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
+        if (progressBar != null) progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (loadingBackground != null) loadingBackground.setVisibility(show ? View.VISIBLE : View.GONE);
         btnLogin.setEnabled(!show);
         btnPhone.setEnabled(!show);
+        btnGuest.setEnabled(!show);
     }
 }

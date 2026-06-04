@@ -152,6 +152,41 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Reply context bar (shown when replying to a comment) -->
+    <LinearLayout
+        android:id="@+id/replyBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#E8F5E9"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvReplyingTo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="↩ Replying to @User"
+            android:textSize="13sp"
+            android:textColor="#2E7D32"
+            android:textStyle="italic" />
+
+        <ImageButton
+            android:id="@+id/btnCancelReply"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Cancel reply"
+            app:tint="#2E7D32"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
+    </LinearLayout>
+
     <!-- Comment Input -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -181,9 +216,10 @@
             android:layout_height="48dp"
             android:src="@drawable/ic_success"
             android:background="@drawable/chat_input_bg"
-            app:tint="#4CAF50"
-            android:padding="12dp" />
+            android:padding="12dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:tint="#4CAF50" />
 
     </LinearLayout>
 
-</LinearLayout>
+</LinearLayout>

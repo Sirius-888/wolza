@@ -169,9 +169,14 @@ public class DoctorActivity extends AppCompatActivity {
         tvDiseaseName.setText(name);
         tvProbability.setText(String.format("Health Score: %.1f%% | Diagnosis Confidence: %.1f%%", healthScore * 100, prob));
         
+        StringBuilder descriptionSb = new StringBuilder();
+        StringBuilder treatmentSb = new StringBuilder();
+
         if (disease.has("details")) {
             JSONObject details = disease.getJSONObject("details");
-            tvDescription.setText(details.optString("description", "No detailed description available for this issue."));
+            String desc = details.optString("description", "No detailed description available for this issue.");
+            tvDescription.setText(desc);
+            descriptionSb.append(desc);
             
             JSONObject treatment = details.optJSONObject("treatment");
             if (treatment != null) {
@@ -187,14 +192,25 @@ public class DoctorActivity extends AppCompatActivity {
                     }
                     sb.append("\n");
                 }
-                tvTreatment.setText(sb.toString().trim());
+                String treatmentText = sb.toString().trim();
+                tvTreatment.setText(treatmentText);
+                treatmentSb.append(treatmentText);
             } else {
                 tvTreatment.setText("General Care: Prune affected leaves, check for pests, and ensure correct watering.");
+                treatmentSb.append("General Care: Prune affected leaves, check for pests, and ensure correct watering.");
             }
         } else {
             tvDescription.setText("No further details available.");
             tvTreatment.setText("Contact a plant specialist if the symptoms persist.");
+            descriptionSb.append("No further details available.");
+            treatmentSb.append("Contact a plant specialist if the symptoms persist.");
         }
+
+        // ✅ Save to history
+        String historyDesc = String.format("⚠️ Issue: %s (%.1f%% confidence)\n%s\n\nTreatment:\n%s",
+                name, prob, descriptionSb.toString(), treatmentSb.toString());
+        HistoryActivity.addToHistory(this, "doctor", name, historyDesc, null);
+
         showResults();
     }
 
@@ -206,6 +222,11 @@ public class DoctorActivity extends AppCompatActivity {
         tvProbability.setText(String.format("Health Score: %.1f%%", healthScore * 100));
         tvDescription.setText("Your plant looks strong! We didn't detect any significant signs of diseases or pests in this photo.");
         tvTreatment.setText("Maintain current care: \n• Ensure proper sunlight\n• Stick to watering schedule\n• Clean dust off leaves regularly");
+
+        // ✅ Save to history
+        String historyDesc = String.format("✅ Plant is Healthy! Health Score: %.1f%%\n\nNo diseases detected. Maintain current care routine.", healthScore * 100);
+        HistoryActivity.addToHistory(this, "doctor", "Healthy Plant ✨", historyDesc, null);
+
         showResults();
     }
 

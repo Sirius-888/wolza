@@ -42,7 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvEmail, tvChangePassword, tvPhone;
     private TextInputEditText etName, etSurname, etPhone;
     private TextInputLayout tilName, tilSurname, tilPhone;
-    private Button btnSave, btnCancel;
+    private Button btnSave, btnCancel, btnReels;
     private ImageView  btnBack;
     private Button btnEdit;
     private ProgressBar progressBar;
@@ -84,6 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         btnEdit = findViewById(R.id.btnEdit);
         btnBack = findViewById(R.id.btnBack);
+        btnReels = findViewById(R.id.btnReels);
         progressBar = findViewById(R.id.progressBar);
         editLayout = findViewById(R.id.editLayout);
         viewLayout = findViewById(R.id.viewLayout);
@@ -99,25 +100,36 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private String targetUserId;
+    private boolean isSelf = true;
+
     private void setupFirebase() {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null) {
-            tvEmail.setText(currentUser.getEmail());
+        targetUserId = getIntent().getStringExtra("userId");
+        if (targetUserId == null && currentUser != null) {
+            targetUserId = currentUser.getUid();
+        }
+
+        isSelf = (currentUser != null && targetUserId.equals(currentUser.getUid()));
+
+        if (!isSelf) {
+            btnEdit.setVisibility(View.GONE);
+            tvChangePassword.setVisibility(View.GONE);
         }
     }
 
     private void loadUserData() {
         showLoading(true);
 
-        if (currentUser == null) {
+        if (targetUserId == null) {
             showLoading(false);
             return;
         }
 
-        DocumentReference userRef = db.collection("users").document(currentUser.getUid());
+        DocumentReference userRef = db.collection("users").document(targetUserId);
         userRef.get().addOnCompleteListener(task -> {
             showLoading(false);
             if (task.isSuccessful()) {
@@ -126,6 +138,7 @@ public class ProfileActivity extends AppCompatActivity {
                     String name = document.getString("name");
                     String surname = document.getString("surname");
                     String phone = document.getString("phone");
+                    String email = document.getString("email");
                     String avatarBase64 = document.getString("avatar");
 
                     TextView tvNameView = findViewById(R.id.tvName);
@@ -134,6 +147,7 @@ public class ProfileActivity extends AppCompatActivity {
                     if (tvNameView != null) tvNameView.setText(name != null ? name : "--");
                     if (tvSurnameView != null) tvSurnameView.setText(surname != null ? surname : "--");
                     if (tvPhone != null) tvPhone.setText(phone != null ? phone : "--");
+                    if (tvEmail != null && email != null) tvEmail.setText(email);
 
                     if (etName != null) etName.setText(name != null ? name : "");
                     if (etSurname != null) etSurname.setText(surname != null ? surname : "");
@@ -143,7 +157,7 @@ public class ProfileActivity extends AppCompatActivity {
                         currentAvatarBase64 = avatarBase64;
                         setAvatarImage(avatarBase64);
                     }
-                } else {
+                } else if (isSelf) {
                     createUserDocument();
                 }
             }
@@ -166,14 +180,35 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
-        btnEdit.setOnClickListener(v -> setEditMode(true));
+        btnEdit.setOnClickListener(v -> {
+            if (isSelf) {
+                setEditMode(true);
+            }
+        });
         btnCancel.setOnClickListener(v -> {
             setEditMode(false);
             loadUserData();
         });
-        btnSave.setOnClickListener(v -> saveProfile());
-        ivAvatar.setOnClickListener(v -> showAvatarPickerDialog());
-        tvChangePassword.setOnClickListener(v -> changePassword());
+        btnSave.setOnClickListener(v -> {
+            if (isSelf) {
+                saveProfile();
+            }
+        });
+        ivAvatar.setOnClickListener(v -> {
+            if (isSelf) {
+                showAvatarPickerDialog();
+            }
+        });
+        tvChangePassword.setOnClickListener(v -> {
+            if (isSelf) {
+                changePassword();
+            }
+        });
+        if (btnReels != null) {
+            btnReels.setOnClickListener(v -> {
+                Toast.makeText(this, "Reels coming soon!", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void setEditMode(boolean edit) {
